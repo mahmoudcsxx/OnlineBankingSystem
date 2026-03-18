@@ -1,4 +1,31 @@
+package banking.app;
+
+import banking.common.AccountStatus;
+import banking.core.account.*;
+import banking.core.transaction.TransactionHistory;
+import banking.core.user.*;
+import banking.core.transaction.Transaction;
+import banking.exception.InsufficientFundsException;
+import banking.persistence.FileManager;
+import banking.service.TransactionManager;
+
+import java.util.ArrayList;
+import java.util.Scanner;
+
+public class BankSystem {
+}
+/**
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ */
+
 /*
+
 package banking.app;
 
 import banking.core.user.User;
@@ -115,19 +142,7 @@ public class BankSystem
 }
 */
 /*
-package banking.app;
 
-import banking.common.AccountStatus;
-import banking.core.account.*;
-import banking.core.transaction.TransactionHistory;
-import banking.core.user.*;
-import banking.core.transaction.Transaction;
-import banking.exception.InsufficientFundsException;
-import banking.persistence.FileManager;
-import banking.service.TransactionManager;
-
-import java.util.ArrayList;
-import java.util.Scanner;
 
 public class BankSystem {
 

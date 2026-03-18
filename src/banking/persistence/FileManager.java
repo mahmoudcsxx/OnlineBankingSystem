@@ -70,7 +70,11 @@ public class FileManager
             for (int i = 0; i < transactions.size(); i++)
             {
                 Transaction t = transactions.get(i);
-                writer.println(t.getTransactionId()+ "," + t.getAmount() + "," + t.getType() + ",DEPOSIT");
+                String accountNumber = "";
+                if (t instanceof Deposit) {
+                    accountNumber = ((Deposit) t).getAccount().getAccountNumber();
+                }
+                writer.println(t.getTransactionId() + "," + t.getAmount() + "," + t.getType() + "," + accountNumber);
             }
         }
         catch (FileNotFoundException e)
