@@ -27,8 +27,11 @@ public class TransactionManager {
    t.execute();
 
    // FIXED: getSourceAccount() → getAccount()
+   // NULL CHECK: getAccount() may return null for Deposit transactions
 
-   t.getAccount().getTransactionHistory().addTransaction(t);
+   if (t.getAccount() != null) {
+    t.getAccount().getTransactionHistory().addTransaction(t);
+   }
 
    // FIXED: getDestinationAccount() → check instanceof Transfer first
 

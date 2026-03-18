@@ -20,7 +20,7 @@ public class Admin extends User {
         }
     }
     public boolean removeUser(ArrayList<User> users , String userId){
-        if(users != null || userId == null){
+        if(users != null && userId == null){
             return false;
         }
         for (int i = 0; i < users.size(); i++) {

@@ -12,7 +12,7 @@ public class PremiumClient extends Client implements LoanEligible, Insurable{
     // Default constructor: sets loan limit to 50,000 and insurance to 10,000
     public PremiumClient(){
         super();
-        this.clientType = ClientType.STANDARD;
+        this.clientType = ClientType.PREMIUM;
         this.loanLimit = 50000;
         this.insuranceAmount = 10000;
     }

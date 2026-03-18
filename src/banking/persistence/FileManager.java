@@ -27,19 +27,17 @@ public class FileManager
         this.filePath = filePath;
     }
 
-    // SAVE METHODS
-
+                // SAVE METHODS//
+    //save users
     public void saveUsers(ArrayList<User> users)
     {
-        try
+        try (PrintWriter writer = new PrintWriter(filePath + "_users.txt"))
         {
-            PrintWriter writer = new PrintWriter(filePath + "_users.txt");
             for (int i = 0; i < users.size(); i++)
             {
                 User u = users.get(i);
                 writer.println(u.getUserId() + "," + u.getName() + "," + u.getPassword() + ",STANDARD");
             }
-            writer.close();
         }
         catch (FileNotFoundException e)
         {
@@ -47,17 +45,16 @@ public class FileManager
         }
     }
 
+    //save Accounts
     public void saveAccounts(ArrayList<Account> accounts)
     {
-        try
+        try (PrintWriter writer = new PrintWriter(filePath + "_accounts.txt"))
         {
-            PrintWriter writer = new PrintWriter(filePath + "_accounts.txt");
             for (int i = 0; i < accounts.size(); i++)
             {
                 Account a = accounts.get(i);
                 writer.println(a.getAccountNumber() + "," + a.getBalance() + "," + a.getStatus());
             }
-            writer.close();
         }
         catch (FileNotFoundException e)
         {
@@ -65,17 +62,16 @@ public class FileManager
         }
     }
 
+    //save Transaction
     public void saveTransactions(ArrayList<Transaction> transactions)
     {
-        try
+        try (PrintWriter writer = new PrintWriter(filePath + "_transactions.txt"))
         {
-            PrintWriter writer = new PrintWriter(filePath + "_transactions.txt");
             for (int i = 0; i < transactions.size(); i++)
             {
                 Transaction t = transactions.get(i);
-                writer.println(t.getTransaction()+ "," + t.getAmount() + "," + t.getType() + ",DEPOSIT");
+                writer.println(t.getTransactionId()+ "," + t.getAmount() + "," + t.getType() + ",DEPOSIT");
             }
-            writer.close();
         }
         catch (FileNotFoundException e)
         {
@@ -83,8 +79,8 @@ public class FileManager
         }
     }
 
-    //  LOAD METHODS
-
+                   //  LOAD METHODS//
+    //load User
     public ArrayList<User> loadUsers()
     {
         ArrayList<User> users = new ArrayList<>();
@@ -100,7 +96,7 @@ public class FileManager
                 {
 
                     User u = new StandardClient(parts[0], parts[1], parts[2],
-                            "email", "phone", 0);
+                            "phone", "email", 0);
 
                     users.add(u);
                 }
@@ -114,7 +110,8 @@ public class FileManager
         return users;
     }
 
-    public ArrayList<Account> loadAccounts()
+    //load Account
+    public ArrayList<Account> loadAccounts(ArrayList<User> users)
     {
         ArrayList<Account> accounts = new ArrayList<>();
         try
@@ -141,6 +138,7 @@ public class FileManager
         return accounts;
     }
 
+    //Load transaction
     public ArrayList<Transaction> loadTransactions(ArrayList<Account> accounts)
     {
         ArrayList<Transaction> transactions = new ArrayList<>();

@@ -32,9 +32,7 @@ public abstract class Account {
         }
 
         this.balance += amount;
-        if(transactionHistory != null) {
-            transactionHistory.recordDeposit(this, amount);
-        }
+
     }
 
     // withdraws an amount from the account
@@ -48,9 +46,7 @@ public abstract class Account {
         }
 
         this.balance -=amount;
-        if(transactionHistory != null) {
-            transactionHistory.recordWithdrawal(this, amount);
-        }
+
     }
 
     // transfers an amount from his account to another account

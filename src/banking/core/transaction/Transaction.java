@@ -82,7 +82,7 @@
 
 
 //the old code://
-
+/*
 package banking.core.transaction;
 
 import banking.common.TransactionType;
@@ -168,5 +168,50 @@ public abstract class Transaction {
     }
 }
 
+*/
 
+package banking.core.transaction;
 
+import banking.common.TransactionType;
+import banking.core.account.Account;
+import java.time.LocalDateTime;
+import java.util.UUID;
+
+public abstract class Transaction {
+    protected String transactionId;
+    protected double amount;
+    protected LocalDateTime date;
+    protected TransactionType type;
+    protected String status;
+    protected Account sourceAccount;
+
+    public Transaction(String transactionId, double amount, TransactionType type, Account sourceAccount) {
+        if (amount <= 0)
+            throw new IllegalArgumentException("Amount must be greater than 0");
+
+        this.transactionId = UUID.randomUUID().toString();
+        this.amount = amount;
+        this.date = LocalDateTime.now();
+        this.type = type;
+        this.status = "PENDING";
+        this.sourceAccount = sourceAccount;
+    }
+
+    public abstract void execute();
+
+    // FIX: renamed getTransaction() -> getTransactionId() for consistency; kept getTransaction() as alias for FileManager
+    public String getTransactionId() { return transactionId; }
+    public String getTransaction()   { return transactionId; }  // kept for FileManager compatibility
+
+    public double getAmount()            { return amount; }
+    public LocalDateTime getDate()       { return date; }
+    public TransactionType getType()     { return type; }
+    public String getStatus()            { return status; }
+    public Account getAccount()          { return sourceAccount; }
+    protected void setStatus(String s)   { this.status = s; }
+    @Override
+    public String toString() {
+        return "Transaction{id='" + transactionId + "', amount=" + amount +
+                ", date=" + date + ", type=" + type + ", status='" + status + "'}";
+    }
+}

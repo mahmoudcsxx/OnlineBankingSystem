@@ -9,7 +9,7 @@ public class InvalidLoginException extends Exception
 {
     /**
      * Constructor for InvalidLoginException
-     *  message it is The error message describing the login failure
+     * @param message The error message describing the login failure
      */
     public InvalidLoginException(String message) {
         super(message); // Pass the message to the BankException base class

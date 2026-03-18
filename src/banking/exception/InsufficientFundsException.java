@@ -8,7 +8,7 @@ public class InsufficientFundsException extends Exception {
 
     /**
      * Constructor for InsufficientFundsException
-     * message it is The error message describing the insufficient funds situation
+     * @param message The error message describing the insufficient funds situation
      */
     public InsufficientFundsException(String message) {
         super(message); // Pass the message to the BankException base class

@@ -16,14 +16,10 @@ public class SavingsAccount extends Account {
     }
 
     // Applies interest on the account
-    public void applyInterest(double amount) {
-        if(interestRate <=0) return;
-
+    public void applyInterest() {
+        if (interestRate <= 0) return;
         double interest = balance * interestRate;
         balance += interest;
-        if(transactionHistory != null) {
-            transactionHistory.recordDeposit(this, amount);
-        }
     }
 
     // Returns the rate of the interest
