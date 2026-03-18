@@ -4,7 +4,9 @@ import banking.common.AccountStatus;
 import banking.core.user.Client;
 import banking.core.transaction.TransactionHistory;
 
-// Business account that inherits its features from its abstract class
+/**
+ * Business account that inherits its features from its abstract class
+ **/
 public class BusinessAccount extends Account {
 
     private final String businessName;
@@ -14,12 +16,16 @@ public class BusinessAccount extends Account {
         this.businessName = businessName;
     }
 
-    // Returns the name of the business
+    /**
+     * @return the name of the business
+      */
     public String getBusinessName() {
         return businessName;
     }
 
-    // The toString function overridden (Added more information into it + the main information)
+    /**
+     * @return the overridden version of the {toString} method
+     **/
     @Override
     public String toString() {
         return "BusinessAccount --> businessName: " + businessName + " / " + super.toString();

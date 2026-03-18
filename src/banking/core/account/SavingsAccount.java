@@ -4,7 +4,9 @@ import banking.core.user.Client;
 import banking.common.AccountStatus;
 import banking.core.transaction.TransactionHistory;
 
-// A Savings account that inherits its features from its abstract class
+/**
+ * A Savings account that inherits its features from its abstract class
+ */
 public class SavingsAccount extends Account {
 
     private final double interestRate;
@@ -15,19 +17,25 @@ public class SavingsAccount extends Account {
         this.interestRate = interestRate;
     }
 
-    // Applies interest on the account
+    /**
+     * Applies interest on the account
+     */
     public void applyInterest() {
         if (interestRate <= 0) return;
         double interest = balance * interestRate;
         balance += interest;
     }
 
-    // Returns the rate of the interest
+    /**
+     * @return  the rate of the interest
+     */
     public double getInterestRate() {
         return interestRate;
     }
 
-    // The toString function overridden (Added more information into it + the main information)
+    /**
+     * @return The toString function overridden (Added more information into it + the main information)
+     */
     @Override
     public String toString() {
         return "SavingsAccount --> interestRate: "  + interestRate + " / " + super.toString();

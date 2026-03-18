@@ -4,7 +4,9 @@ import banking.common.AccountStatus;
 import banking.core.user.Client;
 import banking.core.transaction.TransactionHistory;
 
-// The current account of the owner that inherits its features from its abstract class
+/**
+ * The current account of the owner that inherits its features from its abstract class
+ */
 public class CurrentAccount extends Account {
 
     private double overdraftLimit;
@@ -14,8 +16,10 @@ public class CurrentAccount extends Account {
         this.overdraftLimit = overdraftLimit;
     }
 
-    // Overridden function from the {Account} Class to add the overdraft limit exception
-    // If the amount is greater than the balance and the overdraft limit combined, an exception is handled
+    /** Overridden function from the {Account} Class to add the overdraft limit exception
+     * If the amount is greater than the balance and the overdraft limit combined, an exception is handled
+     */
+
     @Override
     public void withdraw(double amount) {
         if(amount <= 0) {
@@ -30,17 +34,23 @@ public class CurrentAccount extends Account {
         }
     }
 
-    // Returns the overdraft limit of the account
+    /**
+     * @return the overdraft limit of the account
+     **/
     public double getOverdraftLimit() {
         return overdraftLimit;
     }
 
-    // Sets the limit of the overdraft for the account
+    /**
+     * Sets the limit of the overdraft for the account
+     */
     public void setOverdraftLimit(double limit) {
         this.overdraftLimit = limit;
     }
 
-    // The toString function overridden (Added more information into it + the main information)
+    /**
+     * @return The toString function overridden (Added more information into it + the main information)
+     */
     @Override
     public String toString() {
         return "CurrentAccount --> OverdraftLimit: " + overdraftLimit + " / " + super.toString();
