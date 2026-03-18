@@ -1,7 +1,17 @@
+
 package banking.exception;
 
-public class InvalidLoginException extends RuntimeException {
+/**
+ * InvalidLoginException is thrown when a user tries to log in with invalid credentials.
+ * Example: wrong username or password.
+ */
+public class InvalidLoginException extends Exception
+{
+    /**
+     * Constructor for InvalidLoginException
+     *  message it is The error message describing the login failure
+     */
     public InvalidLoginException(String message) {
-        super(message);
+        super(message); // Pass the message to the BankException base class
     }
 }
