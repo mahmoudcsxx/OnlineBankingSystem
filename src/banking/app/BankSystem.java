@@ -43,7 +43,7 @@ public class BankSystem {
     public void run() {
         seedDemoData();
         System.out.println("╔══════════════════════════════╗");
-        System.out.println("║   Welcome to Core Bank System║");
+        System.out.println("║  Welcome to BUE Bank System  ║");
         System.out.println("╚══════════════════════════════╝");
 
         boolean running = true;
@@ -394,6 +394,7 @@ public class BankSystem {
 
     /** Saves users, accounts, and all transactions on program exit. */
     private void saveAll() {
+        new java.io.File("data").mkdirs();
         fileManager.saveUsers(users);
         fileManager.saveAccounts(accounts);
 
