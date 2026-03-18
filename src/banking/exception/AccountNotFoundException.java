@@ -1,9 +1,3 @@
-//Zeina
-
-/**
- * This exception is thrown when an operation tries to access an account
- * that does not exist in the system.
- */
 package banking.exception;
 
 public class AccountNotFoundException extends RuntimeException {

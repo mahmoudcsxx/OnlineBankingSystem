@@ -174,8 +174,8 @@ package banking.core.transaction;
 
 import banking.common.TransactionType;
 import banking.core.account.Account;
-import java.time.LocalDateTime;
-import java.util.UUID;
+import java.time.LocalDateTime;//gets the current date and time
+import java.util.UUID;// generate a unique random ID
 
 public abstract class Transaction {
     protected String transactionId;

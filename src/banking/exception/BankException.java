@@ -1,5 +1,3 @@
-//Zeina
-
 /**
  * This is the base class for all exceptions in the banking system.
  * -> Any error or unusual situation that occurs during bank operations

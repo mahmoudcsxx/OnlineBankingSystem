@@ -91,6 +91,11 @@ public class Admin extends User {
         }
     }
 
+    /**
+     * Returns a formatted summary of this admin's key details.
+     *
+     * @return a string containing the admin's ID, name, and email.
+     */
     @Override
     public String toString() {
         return String.format(

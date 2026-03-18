@@ -15,6 +15,7 @@ public abstract class Account {
     protected TransactionHistory transactionHistory;
 
 
+
     /** A new account is created with these details
     Assigns every parameterized constructor variable
      */
@@ -25,7 +26,7 @@ public abstract class Account {
         this.owner = owner;
         this.status = status;
         this.transactionHistory = transactionHistory;
-        
+
 
     }
 
@@ -101,7 +102,7 @@ public abstract class Account {
     }
 
     /**
-     * Sets the status of the account depending on its status
+     * @param status setting the status of the account depending on its status
      */
     public void setStatus(AccountStatus status) {
         this.status = status;
