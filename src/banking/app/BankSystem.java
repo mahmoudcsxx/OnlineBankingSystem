@@ -24,7 +24,7 @@ import java.util.Scanner;
  */
 public class BankSystem {
 
-    // ─── State ────────────────────────────────────────────────────────────────
+    // ====== State ======
     private final ArrayList<User>    users    = new ArrayList<>();
     private final ArrayList<Account> accounts = new ArrayList<>();
 
@@ -32,12 +32,12 @@ public class BankSystem {
     private final FileManager        fileManager        = new FileManager("data/bank");
     private final Scanner            scanner            = new Scanner(System.in);
 
-    // ─── Entry point ──────────────────────────────────────────────────────────
+    // ====== Entry point ======
     public static void main(String[] args) {
         new BankSystem().run();
     }
 
-    // ─── Bootstrap ────────────────────────────────────────────────────────────
+    // ====== Bootstrap ======
 
     /** Seeds demo data and starts the main loop. */
     public void run() {
@@ -100,7 +100,7 @@ public class BankSystem {
         accounts.add(fcBiz);
     }
 
-    // ─── Main Menu ────────────────────────────────────────────────────────────
+    // ====== Main Menu ======
 
     /**
      * Displays the top-level menu.
@@ -123,7 +123,7 @@ public class BankSystem {
         return true;
     }
 
-    // ─── Auth ─────────────────────────────────────────────────────────────────
+    // ====== Auth ======
 
     private void login() {
         System.out.print("Email: ");
@@ -175,7 +175,7 @@ public class BankSystem {
         System.out.println("Your account number: " + accNum);
     }
 
-    // ─── Admin Menu ───────────────────────────────────────────────────────────
+    // ====== Admin Menu ======
 
     private void adminMenu(Admin admin) {
         boolean loggedIn = true;
@@ -226,7 +226,7 @@ public class BankSystem {
         System.out.println("Account created: " + accNum);
     }
 
-    // ─── Client Menu ──────────────────────────────────────────────────────────
+    // ====== Client Menu ======
 
     private void clientMenu(Client client) {
         boolean loggedIn = true;
@@ -260,7 +260,7 @@ public class BankSystem {
         }
     }
 
-    // ─── Client Operations ────────────────────────────────────────────────────
+    // ====== Client Operations ======
 
     private void handleDeposit(Client client) {
         Account acc = selectAccount(client);
@@ -358,7 +358,7 @@ public class BankSystem {
         }
     }
 
-    // ─── Helpers ──────────────────────────────────────────────────────────────
+    // ====== Helpers ======
 
     /**
      * Prints the client's accounts and asks them to pick one.
@@ -406,7 +406,7 @@ public class BankSystem {
         System.out.println("Data saved.");
     }
 
-    // ─── Safe input readers ───────────────────────────────────────────────────
+    // ====== Safe input readers ======
 
     private int readInt() {
         while (true) {
