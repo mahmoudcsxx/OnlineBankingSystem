@@ -252,9 +252,10 @@ public class BankSystem {
             System.out.println("3. Withdraw");
             System.out.println("4. Transfer");
             System.out.println("5. Transaction history");
+            System.out.println("6. View balance");
             if (client instanceof PremiumClient || client instanceof FirstClassClient) {
-                System.out.println("6. Apply for loan");
-                System.out.println("7. Claim insurance");
+                System.out.println("7. Apply for loan");
+                System.out.println("8. Claim insurance");
             }
             System.out.println("0. Logout");
             System.out.print("Choice: ");
@@ -266,8 +267,9 @@ public class BankSystem {
                 case 3: handleWithdraw(client); break;
                 case 4: handleTransfer(client); break;
                 case 5: handleHistory(client); break;
-                case 6: handleLoan(client); break;
-                case 7: handleInsurance(client); break;
+                case 6: handleViewBalance(client); break;
+                case 7: handleLoan(client); break;
+                case 8: handleInsurance(client); break;
                 case 0: client.logout(); loggedIn = false; break;
                 default: System.out.println("Invalid choice.");
             }
@@ -348,6 +350,12 @@ public class BankSystem {
         if (acc == null) return;
         System.out.println("--- Transaction History for " + acc.getAccountNumber() + " ---");
         transactionManager.printTransactionHistory(acc);
+    }
+    private void handleViewBalance(Client client) {
+        Account acc = selectAccount(client);
+        if (acc == null) return;
+        System.out.printf("Balance for %s: %.2f%n",
+                acc.getAccountNumber(), acc.getBalance());
     }
 
     private void handleLoan(Client client) {
