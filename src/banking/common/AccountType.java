@@ -1,3 +1,13 @@
+/**
+ * Online Banking System — Phase 1
+ * Course: Programming in Java (25CSCI04C)
+ * British University in Egypt (BUE)
+ *
+ * @author Youssef Hassan (250498) — Group A-12
+ * @version 1.0
+ * @since 19-3-2026
+ */
+
 package banking.common;
 /* This enum represents the type of bank account  */
 public enum AccountType {

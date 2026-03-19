@@ -1,3 +1,13 @@
+/**
+ * Online Banking System — Phase 1
+ * Course: Programming in Java (25CSCI04C)
+ * British University in Egypt (BUE)
+ *
+ * @author Malak Waleed (252304) — Group A-7
+ * @version 1.0
+ * @since 19-3-2026
+ */
+
 package banking.exception;
 
 /**

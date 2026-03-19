@@ -1,3 +1,17 @@
+/**
+ * Online Banking System — Phase 1
+ * Course: Programming in Java (25CSCI04C)
+ * British University in Egypt (BUE)
+ *
+ * @author Mahmoud Samir (257678) — Group A-14
+ * @author Youssef Hassan (250498) — Group A-12
+ * @author Ibrahim Mostafa (257511) — Group A-8
+ * @author Zeina Alaaeldin (254588) — Group A-14
+ * @author Zainab Sabit (257156) — Group A-14
+ * @author Malak Waleed (252304) — Group A-7
+ * @version 1.0
+ * @since 2026
+ */
 package banking.app;
 
 import banking.common.AccountStatus;

@@ -1,4 +1,14 @@
 /**
+ * Online Banking System — Phase 1
+ * Course: Programming in Java (25CSCI04C)
+ * British University in Egypt (BUE)
+ *
+ * @author Zeina Alaaeldin (254588) — Group A-14
+ * @version 1.0
+ * @since 19-3-2026
+ */
+
+/**
  * This is the base class for all exceptions in the banking system.
  * -> Any error or unusual situation that occurs during bank operations
  * (like invalid transactions, insufficient funds, account issues) can
