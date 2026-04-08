@@ -2,9 +2,7 @@
  * Online Banking System — Phase 1
  * Course: Programming in Java (25CSCI04C)
  * British University in Egypt (BUE)
- * @author Mahmoud Samir (257678) — Group A-14 , Youssef Hassan (250498) — Group A-12
- * @version 1.1
- * @since 8-4-2026
+ *
  * @author Zeina Alaaeldin (254588) — Group A-14
  * @version 1.0
  * @since 19-3-2026
@@ -30,14 +28,10 @@ public class BankException extends RuntimeException {
     }
 
     public BankException(String message) {
-        super(message);
-    }
-
-    public BankException(String message, Throwable cause) {
         /**
          * Constructor with custom error message.
          * message it is Detailed description of the error.
          */
-        super(message, cause); // Pass message to parent Exception class
+        super(message); // Pass message to parent Exception class
     }
 }

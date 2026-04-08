@@ -2,9 +2,7 @@
  * Online Banking System — Phase 1
  * Course: Programming in Java (25CSCI04C)
  * British University in Egypt (BUE)
- * @author Mahmoud Samir (257678) — Group A-14 , Youssef Hassan (250498) — Group A-12
- * @version 1.1
- * @since 8-4-2026
+ *
  * @author Zainab Sabit (257156) — Group A-14
  * @version 1.0
  * @since 19-3-2026
@@ -16,14 +14,13 @@ package banking.exception;
  * InvalidLoginException is thrown when a user tries to log in with invalid credentials.
  * Example: wrong username or password.
  */
-public class InvalidLoginException extends BankException
+public class InvalidLoginException extends Exception
 {
     /**
      * Constructor for InvalidLoginException
      * @param message The error message describing the login failure
      */
     public InvalidLoginException(String message) {
-
         super(message); // Pass the message to the BankException base class
     }
 }
