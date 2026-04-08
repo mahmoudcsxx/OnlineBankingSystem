@@ -16,7 +16,7 @@ package banking.exception;
  * UserAlreadyExistsException is thrown when trying to register a user
  * that already exists in the system.
  */
-public class UserAlreadyExistsException extends Exception {
+public class UserAlreadyExistsException extends BankException {
 
     /**
      * Constructor for UserAlreadyExistsException

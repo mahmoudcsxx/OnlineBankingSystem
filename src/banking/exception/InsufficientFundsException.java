@@ -14,7 +14,7 @@ package banking.exception;
  * InsufficientFundsException is thrown when a user tries to withdraw or transfer
  * more money than is available in their account.
  */
-public class InsufficientFundsException extends Exception {
+public class InsufficientFundsException extends BankException {
 
     /**
      * Constructor for InsufficientFundsException

@@ -10,7 +10,7 @@
 
 package banking.exception;
 
-public class TransactionException extends Exception {
+public class TransactionException extends BankException {
 
     // Default constructor
     public TransactionException() {

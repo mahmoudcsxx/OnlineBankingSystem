@@ -34,4 +34,13 @@ public class BankException extends RuntimeException {
          */
         super(message); // Pass message to parent Exception class
     }
+
+    public BankException(String message, Throwable cause) {
+        /**
+         * Constructor with custom error message and cause.
+         * message it is Detailed description of the error.
+         * cause it is The underlying cause of the exception.
+         */
+        super(message, cause); // Pass message and cause to parent Exception class
+    }
 }

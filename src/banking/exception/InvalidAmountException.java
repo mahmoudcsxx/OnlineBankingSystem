@@ -14,7 +14,7 @@ package banking.exception;
  * InvalidAmountException is thrown when a user tries to deposit, withdraw,
  * or transfer an invalid amount (e.g., negative or zero).
  */
-public class InvalidAmountException extends Exception {
+public class InvalidAmountException extends BankException {
 
     /**
      * Constructor for InvalidAmountException

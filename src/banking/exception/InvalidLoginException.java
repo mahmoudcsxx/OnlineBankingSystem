@@ -14,7 +14,7 @@ package banking.exception;
  * InvalidLoginException is thrown when a user tries to log in with invalid credentials.
  * Example: wrong username or password.
  */
-public class InvalidLoginException extends Exception
+public class InvalidLoginException extends BankException
 {
     /**
      * Constructor for InvalidLoginException
