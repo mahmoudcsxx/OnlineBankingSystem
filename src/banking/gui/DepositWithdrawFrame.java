@@ -76,7 +76,7 @@ public class DepositWithdrawFrame extends javax.swing.JFrame {
         jLabel2.setText("Available Balance");
 
         jLabel3.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
-        jLabel3.setForeground(new java.awt.Color(51, 255, 51));
+        jLabel3.setForeground(new java.awt.Color(51, 204, 0));
         jLabel3.setText("EGP 00,000.00");
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
