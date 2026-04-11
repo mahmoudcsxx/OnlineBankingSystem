@@ -1,22 +1,132 @@
 /*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
+ * Online Banking System - Phase 2
+ * @author Ibrahim Mostafa (257511) - Group A-14
  */
 package banking.gui;
 
-/**
- *
- * @author Admin
- */
+import banking.core.account.Account;
+import banking.core.user.Client;
+import banking.core.user.User;
+import banking.exception.BankException;
+import banking.exception.InvalidAmountException;
+import banking.persistence.FileManager;
+import banking.service.AuthService;
+import java.util.ArrayList;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.JOptionPane;
+
 public class DepositWithdrawFrame extends javax.swing.JFrame {
-    
+
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(DepositWithdrawFrame.class.getName());
+
+    private Client currentUser;
+    private final FileManager fileManager = new FileManager("data/bank");
 
     /**
      * Creates new form DepositWithdrawFrame
      */
     public DepositWithdrawFrame() {
         initComponents();
+    }
+
+    /** Preferred constructor — opened with the logged-in client */
+    public DepositWithdrawFrame(Client user) {
+        this.currentUser = user;
+        initComponents();
+        loadAccountsIntoCombo();
+        refreshBalanceLabel();
+        wireListeners();
+    }
+
+    /** Attaches handlers to the Deposit button, Withdraw button, and account combo */
+    private void wireListeners() {
+        jButton1.addActionListener(e -> handleTransaction(true));
+        jButton2.addActionListener(e -> handleTransaction(false));
+        jComboBox1.addActionListener(e -> refreshBalanceLabel());
+    }
+
+    /** Fills the account dropdown with the logged-in client's accounts */
+    private void loadAccountsIntoCombo() {
+        DefaultComboBoxModel<String> model = new DefaultComboBoxModel<>();
+        if (currentUser != null) {
+            for (Account a : currentUser.getAccounts()) {
+                model.addElement(a.getAccountNumber());
+            }
+        }
+        jComboBox1.setModel(model);
+    }
+
+    /** Returns the Account object matching the currently selected combo entry */
+    private Account getSelectedAccount() {
+        if (currentUser == null) return null;
+        String selected = (String) jComboBox1.getSelectedItem();
+        if (selected == null) return null;
+        return currentUser.findAccountByNumber(selected);
+    }
+
+    /** Updates the "Available Balance" label to reflect the selected account */
+    private void refreshBalanceLabel() {
+        Account a = getSelectedAccount();
+        if (a == null) {
+            jLabel3.setText("EGP 0.00");
+        } else {
+            jLabel3.setText("EGP " + a.getBalance());
+        }
+    }
+
+    /** Shared deposit/withdraw handler. isDeposit=true for deposit, false for withdraw */
+    private void handleTransaction(boolean isDeposit) {
+        try {
+            Account account = getSelectedAccount();
+            if (account == null) {
+                throw new BankException("Please select an account first.");
+            }
+
+            String raw = (isDeposit ? jTextField1 : jTextField2).getText().trim();
+            double amount;
+            try {
+                amount = Double.parseDouble(raw);
+            } catch (NumberFormatException nfe) {
+                throw new InvalidAmountException("Amount must be a valid number.");
+            }
+            if (amount <= 0) {
+                throw new InvalidAmountException("Amount must be greater than zero.");
+            }
+
+            if (isDeposit) {
+                account.deposit(amount);
+            } else {
+                account.withdraw(amount);
+            }
+
+            fileManager.saveAccounts(collectAllAccounts());
+            refreshBalanceLabel();
+            JOptionPane.showMessageDialog(this,
+                    (isDeposit ? "Deposited " : "Withdrew ") + amount
+                            + " on account " + account.getAccountNumber(),
+                    "Success", JOptionPane.INFORMATION_MESSAGE);
+        } catch (BankException ex) {
+            showError(ex.getMessage());
+        } catch (IllegalArgumentException ex) {
+            // Account's internal validation still throws IllegalArgumentException
+            showError(ex.getMessage());
+        }
+    }
+
+    /** Gathers every account from every client (FileManager saves the whole list) */
+    private ArrayList<Account> collectAllAccounts() {
+        ArrayList<Account> all = new ArrayList<>();
+        for (User u : AuthService.get().getUsers()) {
+            if (u instanceof Client) {
+                all.addAll(((Client) u).getAccounts());
+            }
+        }
+        return all;
+    }
+
+    /** Simple error dialog helper */
+    private void showError(String msg) {
+        JOptionPane.showMessageDialog(this, msg, "Error", JOptionPane.ERROR_MESSAGE);
     }
 
     /**
@@ -52,7 +162,7 @@ public class DepositWithdrawFrame extends javax.swing.JFrame {
         jTextField2 = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setTitle("Deposit-Withdraw");
+        setTitle("Nova Bank System - Deposit & Withdraw");
         setPreferredSize(new java.awt.Dimension(875, 550));
 
         jPanel2.setBackground(new java.awt.Color(255, 255, 255));
@@ -66,7 +176,7 @@ public class DepositWithdrawFrame extends javax.swing.JFrame {
 
         jComboBox1.setBackground(new java.awt.Color(255, 255, 255));
         jComboBox1.setEditable(true);
-        jComboBox1.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
+        jComboBox1.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
         jComboBox1.setForeground(new java.awt.Color(255, 51, 51));
         jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
         jComboBox1.addActionListener(this::jComboBox1ActionPerformed);
@@ -85,10 +195,10 @@ public class DepositWithdrawFrame extends javax.swing.JFrame {
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGap(23, 23, 23)
-                .addComponent(jLabel1)
+                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 114, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
-                .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 131, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 353, Short.MAX_VALUE)
+                .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 179, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 293, Short.MAX_VALUE)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                         .addComponent(jLabel2)
@@ -183,11 +293,12 @@ public class DepositWithdrawFrame extends javax.swing.JFrame {
 
         jLabel6.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         jLabel6.setForeground(new java.awt.Color(0, 0, 0));
-        jLabel6.setText("Amount");
+        jLabel6.setText("Amount (EGP)");
 
         jTextField1.setBackground(new java.awt.Color(204, 204, 204));
         jTextField1.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         jTextField1.setForeground(new java.awt.Color(51, 51, 51));
+        jTextField1.setText("0");
 
         jButton1.setBackground(new java.awt.Color(51, 153, 0));
         jButton1.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
@@ -200,23 +311,22 @@ public class DepositWithdrawFrame extends javax.swing.JFrame {
             jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jPanel9, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addComponent(jPanel12, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addGroup(jPanel7Layout.createSequentialGroup()
-                .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel7Layout.createSequentialGroup()
-                        .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel7Layout.createSequentialGroup()
-                                .addGap(150, 150, 150)
-                                .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 92, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(jPanel7Layout.createSequentialGroup()
-                                .addGap(16, 16, 16)
-                                .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 99, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 333, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                        .addGap(0, 45, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel7Layout.createSequentialGroup()
+                .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel7Layout.createSequentialGroup()
+                        .addGap(150, 150, 150)
+                        .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 92, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 152, Short.MAX_VALUE))
                     .addGroup(jPanel7Layout.createSequentialGroup()
                         .addContainerGap()
-                        .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                        .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(jTextField1)
+                            .addComponent(jButton1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
                 .addContainerGap())
+            .addGroup(jPanel7Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabel6)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel7Layout.setVerticalGroup(
             jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -272,7 +382,7 @@ public class DepositWithdrawFrame extends javax.swing.JFrame {
 
         jLabel7.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         jLabel7.setForeground(new java.awt.Color(0, 0, 0));
-        jLabel7.setText("Amount");
+        jLabel7.setText("Amount (EGP) ");
 
         jButton2.setBackground(new java.awt.Color(204, 0, 0));
         jButton2.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
@@ -282,6 +392,7 @@ public class DepositWithdrawFrame extends javax.swing.JFrame {
         jTextField2.setBackground(new java.awt.Color(204, 204, 204));
         jTextField2.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         jTextField2.setForeground(new java.awt.Color(0, 0, 0));
+        jTextField2.setText("0");
 
         javax.swing.GroupLayout jPanel8Layout = new javax.swing.GroupLayout(jPanel8);
         jPanel8.setLayout(jPanel8Layout);
@@ -290,22 +401,18 @@ public class DepositWithdrawFrame extends javax.swing.JFrame {
             .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addComponent(jPanel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel8Layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap(147, Short.MAX_VALUE)
                 .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 133, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(120, 120, 120))
             .addGroup(jPanel8Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addContainerGap())
-            .addGroup(jPanel8Layout.createSequentialGroup()
                 .addGroup(jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jTextField2, javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(jPanel8Layout.createSequentialGroup()
-                        .addGap(16, 16, 16)
-                        .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 99, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel8Layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, 347, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(47, Short.MAX_VALUE))
+                        .addComponent(jLabel7)
+                        .addGap(0, 0, Short.MAX_VALUE)))
+                .addContainerGap())
         );
         jPanel8Layout.setVerticalGroup(
             jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
