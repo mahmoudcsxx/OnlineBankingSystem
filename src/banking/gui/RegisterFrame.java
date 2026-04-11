@@ -1,23 +1,65 @@
 /*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
+ * Online Banking System - Phase 2
+ * @author Mahmoud Samir (257678) - Group A-14
  */
 package banking.gui;
 
-/**
- *
- * @author Admin
- */
+import banking.core.user.StandardClient;
+import banking.exception.BankException;
+import banking.service.AuthService;
+import java.util.UUID;
+import javax.swing.JOptionPane;
+
 public class RegisterFrame extends javax.swing.JFrame {
-    
+
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(RegisterFrame.class.getName());
-    
 
     /**
      * Creates new form SignUpFrame
      */
     public RegisterFrame() {
         initComponents();
+        wireListeners();
+    }
+
+    /** Attaches action listeners to Sign Up and Login buttons */
+    private void wireListeners() {
+        jButton1.addActionListener(e -> handleRegister());
+        jButton2.addActionListener(e -> handleBackToLogin());
+    }
+
+    /** Builds a StandardClient from the form fields and registers it */
+    private void handleRegister() {
+        try {
+            String name = jTextField1.getText().trim();
+            String email = jTextField2.getText().trim();
+            String password = jTextField3.getText().trim();
+            String phone = jTextField4.getText().trim();
+
+            if (name.isEmpty() || email.isEmpty() || password.isEmpty() || phone.isEmpty()) {
+                throw new BankException("Please fill in all fields.");
+            }
+
+            String userId = UUID.randomUUID().toString().substring(0, 8);
+            StandardClient newClient = new StandardClient(
+                    userId, name, email, password, phone, 1000.0);
+
+            AuthService.get().register(newClient);
+
+            JOptionPane.showMessageDialog(this,
+                    "Account created successfully! Please log in.",
+                    "Success", JOptionPane.INFORMATION_MESSAGE);
+            handleBackToLogin();
+        } catch (BankException ex) {
+            JOptionPane.showMessageDialog(this,
+                    ex.getMessage(), "Registration Failed", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    /** Returns the user to the Login screen */
+    private void handleBackToLogin() {
+        new LoginFrame().setVisible(true);
+        dispose();
     }
 
     /**
@@ -55,8 +97,8 @@ public class RegisterFrame extends javax.swing.JFrame {
         jLabel7.setText("NovaBank");
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setTitle("Register");
-        setPreferredSize(new java.awt.Dimension(800, 500));
+        setTitle("Nova Bank System - Register");
+        setPreferredSize(new java.awt.Dimension(800, 520));
 
         Right1.setBackground(new java.awt.Color(255, 255, 255));
         Right1.setToolTipText("SignUp");
