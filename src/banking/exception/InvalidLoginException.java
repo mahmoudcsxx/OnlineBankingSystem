@@ -3,7 +3,7 @@
  * Course: Programming in Java (25CSC104C)
  * British University in Egypt (BUE)
  *
- * Phase 1:
+ * Phase - 2
  *  @author Zainab Sabit (257156) – Group A-14
  *  @version 1.0
  *  @since 19-3-2026

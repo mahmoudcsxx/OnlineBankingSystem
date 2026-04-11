@@ -1,6 +1,10 @@
 
 /**
- * Online Banking System - Phase 2 
+ * Online Banking System 
+ * Course: Programming in Java (25CSCI04C)
+ * British University in Egypt
+ 
+ * Phase - 2
  * @author Youssef Hassan (250498) - Group A-14
  */
 

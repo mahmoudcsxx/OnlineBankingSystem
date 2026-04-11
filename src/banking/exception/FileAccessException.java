@@ -3,7 +3,7 @@
  * Course: Programming in Java (25CSCI04C)
  * British University in Egypt (BUE)
  *
- * Phase 2:
+ * Phase - 2
  *  @author Malak Waleed (252304) — Group A-14
  *  @version 2.0
  *  @since 11-4-2026

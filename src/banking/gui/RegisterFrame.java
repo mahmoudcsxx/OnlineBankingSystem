@@ -1,5 +1,9 @@
 /*
- * Online Banking System - Phase 2
+ * Online Banking System 
+ * Course: Programming in Java (25CSCI04C)
+ * British University in Egypt
+
+ * Phase - 2
  * @author Mahmoud Samir (257678) - Group A-14
  */
 package banking.gui;

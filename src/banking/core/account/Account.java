@@ -1,8 +1,9 @@
 /**
- * Online Banking System — Phase 1
+ * Online Banking System 
  * Course: Programming in Java (25CSCI04C)
  * British University in Egypt (BUE)
- *
+ 
+ * Phase - 2
  * @author Youssef Hassan (250498) — Group A-12
  * @version 1.0
  * @since 19-3-2026
@@ -11,10 +12,8 @@
 package banking.core.account;
 
 import banking.common.AccountStatus;
-import banking.common.AccountType;
 import banking.core.user.Client;
 import banking.core.transaction.TransactionHistory;
-import banking.common.ClientType;
 
 /** Abstract class
  *(reusable blueprint for its subclasses {Savings, Current, Business} accounts)

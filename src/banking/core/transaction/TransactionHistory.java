@@ -1,8 +1,9 @@
 /**
- * Online Banking System — Phase 1
+ * Online Banking System
  * Course: Programming in Java (25CSCI04C)
  * British University in Egypt (BUE)
- *
+ 
+ * Phase - 2
  * @author Ibrahim Mostafa (257511) — Group A-8
  * @version 1.0
  * @since 19-3-2026
