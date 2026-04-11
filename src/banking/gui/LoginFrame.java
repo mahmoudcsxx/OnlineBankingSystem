@@ -1,7 +1,14 @@
-/*
- * Online Banking System - Phase 2
- * @author Mahmoud Samir (257678) - Group A-14
+/**
+ * Online Banking System
+ * Course: Programming in Java (25CSCI04C)
+ * British University in Egypt (BUE)
+ *
+ * Phase 2:
+ *  @author Youssef Hassan (250498) - Group A-14
+ *  @version 2.0
+ *  @since 11-4-2026
  */
+
 package banking.gui;
 
 import banking.core.user.Admin;
