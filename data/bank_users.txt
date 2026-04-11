@@ -1,4 +1,2 @@
 A001,Admin,admin123,STANDARD
-C001,Mahmoud Ali,pass123,STANDARD
-C002,Sara Hassan,pass456,STANDARD
-C003,Zeina Mostafa,pass789,STANDARD
+

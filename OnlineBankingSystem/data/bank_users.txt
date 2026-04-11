@@ -1,0 +1,6 @@
+A001,Admin,phone,STANDARD
+C001,Mahmoud Ali,phone,STANDARD
+C002,Sara Hassan,phone,STANDARD
+C003,Zeina Mostafa,phone,STANDARD
+f3cdc924,EEEE,phone,STANDARD
+56d61f01,Mahmoud,123,STANDARD

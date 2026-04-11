@@ -17,7 +17,6 @@ import banking.core.user.User;
 import banking.exception.BankException;
 import banking.service.AuthService;
 import javax.swing.JOptionPane;
-import java.util.Scanner;
 
 public class LoginFrame extends javax.swing.JFrame {
 

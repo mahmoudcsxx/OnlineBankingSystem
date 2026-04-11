@@ -28,3 +28,6 @@ bin/
 
 ### Mac OS ###
 .DS_Store
+/OnlineBankingSystem/nbproject/private/
+/OnlineBankingSystem/build/
+/OnlineBankingSystem/dist/
