@@ -1,28 +1,24 @@
 /**
- * Online Banking System — Phase 1
- * Course: Programming in Java (25CSCI04C)
+ * Online Banking System
+ * Course: Programming in Java (25CSC104C)
  * British University in Egypt (BUE)
  *
- * @author Zainab Sabit (257156) — Group A-14
- * @version 1.0
- * @since 19-3-2026
+ * Phase 1:
+ *   @author Zainab Sabit (257156) – Group A-14
+ *   @version 1.0
+ *   @since 19-3-2026
+ *
+ * Phase 2:
+ *   @author: Youssef Hassan (250498) – Group A-14
+ *   @version: 2.0
+ *   @since: 11-4-2026
  */
-
-//RuntimeException
 
 package banking.exception;
 
-/**
- * UserAlreadyExistsException is thrown when trying to register a user
- * that already exists in the system.
- */
-public class UserAlreadyExistsException extends Exception {
-
-    /**
-     * Constructor for UserAlreadyExistsException
-     * message it is The error message describing the duplicate user
-     */
-    public UserAlreadyExistsException(String message) {
-        super(message); // Pass the message to the BankException base class
+/** Thrown when registering a user whose email is already taken */
+public class UserAlreadyExistsException extends BankException{
+    public UserAlreadyExistsException (String message) {
+        super(message);
     }
 }
