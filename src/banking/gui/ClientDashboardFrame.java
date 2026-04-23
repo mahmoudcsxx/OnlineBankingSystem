@@ -34,6 +34,10 @@ public class ClientDashboardFrame extends javax.swing.JFrame {
         jButton6.addActionListener(e -> openHistory());
     }
 
+    /**
+     * Returns the currently authenticated Client, or null if none is logged in
+     * or the current user is not a Client (e.g. an admin).
+     */
     private Client getCurrentClient() {
         if (AuthService.get().getCurrentUser() instanceof Client) {
             return (Client) AuthService.get().getCurrentUser();
@@ -41,12 +45,64 @@ public class ClientDashboardFrame extends javax.swing.JFrame {
         return null;
     }
 
+     /**
+     * Logs the current user out, returns to the LoginFrame, and closes this frame.
+     */
     private void handleLogout() {
-        AuthService.get().logout();
-        new LoginFrame().setVisible(true);
-        dispose();
+        int confirm = JOptionPane.showConfirmDialog(
+                this,
+                "Are you sure you want to logout?",
+                "Logout",
+                JOptionPane.YES_NO_OPTION);
+ 
+        if (confirm == JOptionPane.YES_OPTION) {
+            AuthService.get().logout();
+            new LoginFrame().setVisible(true);
+            dispose();
+        }
     }
 
+    /**
+     * Shows a dialog listing all accounts belonging to the current client.
+     */
+    private void showAccounts() {
+        Client client = getCurrentClient();
+        if (client == null) {
+            showError("No client is logged in.");
+            return;
+        }
+ 
+        if (client.getAccounts().isEmpty()) {
+            JOptionPane.showMessageDialog(
+                    this,
+                    "No accounts found for this client.",
+                    "My Accounts",
+                    JOptionPane.INFORMATION_MESSAGE);
+            return;
+        }
+ 
+        StringBuilder message = new StringBuilder("My accounts:\n\n");
+        for (banking.core.account.Account account : client.getAccounts()) {
+            message.append(account.getAccountNumber())
+                    .append(" - EGP ")
+                    .append(String.format("%.2f", account.getBalance()))
+                    .append("  (")
+                    .append(account.getStatus())
+                    .append(")\n");
+        }
+ 
+        JOptionPane.showMessageDialog(
+                this,
+                message.toString(),
+                "My Accounts",
+                JOptionPane.INFORMATION_MESSAGE);
+    }
+    
+    /**
+     * Opens the Deposit / Withdraw frame for the current client.
+     * Both the Deposit (jButton3) and Withdraw (jButton4) buttons call this
+     * method — the DepositWithdrawFrame handles the mode internally.
+     */
     private void openDepositWithdraw() {
         Client client = getCurrentClient();
         if (client == null) {
@@ -56,31 +112,9 @@ public class ClientDashboardFrame extends javax.swing.JFrame {
         new DepositWithdrawFrame(client).setVisible(true);
     }
 
-    private void showAccounts() {
-        Client client = getCurrentClient();
-        if (client == null) {
-            showError("No client is logged in.");
-            return;
-        }
-
-        if (client.getAccounts().isEmpty()) {
-            JOptionPane.showMessageDialog(this,
-                    "No accounts found for this client.",
-                    "My Accounts", JOptionPane.INFORMATION_MESSAGE);
-            return;
-        }
-
-        StringBuilder message = new StringBuilder("My accounts:\n\n");
-        for (banking.core.account.Account account : client.getAccounts()) {
-            message.append(account.getAccountNumber())
-                    .append(" - EGP ").append(account.getBalance())
-                    .append(" (").append(account.getStatus()).append(")\n");
-        }
-
-        JOptionPane.showMessageDialog(this,
-                message.toString(), "My Accounts", JOptionPane.INFORMATION_MESSAGE);
-    }
-
+    /**
+     * Opens the Transfer panel for the current client.
+     */
     private void openTransfer() {
         Client client = getCurrentClient();
         if (client == null) {
@@ -90,6 +124,9 @@ public class ClientDashboardFrame extends javax.swing.JFrame {
         new TransferPanel().setVisible(true);
     }
 
+    /**
+     * Opens the Transaction History panel for the current client.
+     */
     private void openHistory() {
         Client client = getCurrentClient();
         if (client == null) {
@@ -99,6 +136,9 @@ public class ClientDashboardFrame extends javax.swing.JFrame {
         new HistoryPanel(client).setVisible(true);
     }
 
+    /**
+     * Opens the Loan & Insurance frame for the current client.
+     */
     private void openLoanInsurance() {
         Client client = getCurrentClient();
         if (client == null) {
@@ -108,6 +148,11 @@ public class ClientDashboardFrame extends javax.swing.JFrame {
         new loanInsuranceFrame(client).setVisible(true);
     }
 
+    /**
+     * Displays an error dialog with the given message.
+     *
+     * @param message the error text to display
+     */
     private void showError(String message) {
         JOptionPane.showMessageDialog(this, message, "Error", JOptionPane.ERROR_MESSAGE);
     }
@@ -144,7 +189,6 @@ public class ClientDashboardFrame extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Nova Bank System - Client Dashboard");
-        setPreferredSize(new java.awt.Dimension(800, 570));
         setSize(new java.awt.Dimension(800, 570));
 
         jPanel1.setBackground(new java.awt.Color(255, 255, 255));
@@ -168,7 +212,7 @@ public class ClientDashboardFrame extends javax.swing.JFrame {
         jLabel9.setForeground(new java.awt.Color(153, 153, 153));
         jLabel9.setText("Banking, reimagined.");
 
-        jButton1.setBackground(new java.awt.Color(255, 0, 0));
+        jButton1.setBackground(new java.awt.Color(255, 216, 76));
         jButton1.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         jButton1.setForeground(new java.awt.Color(51, 51, 51));
         jButton1.setText("Logout");
@@ -349,7 +393,16 @@ public class ClientDashboardFrame extends javax.swing.JFrame {
             logger.log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
-
+try {
+            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+                if ("Nimbus".equals(info.getName())) {
+                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                    break;
+                }
+            }
+        } catch (ReflectiveOperationException | javax.swing.UnsupportedLookAndFeelException ex) {
+            logger.log(java.util.logging.Level.SEVERE, null, ex);
+        }
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(() -> new ClientDashboardFrame().setVisible(true));
     }
