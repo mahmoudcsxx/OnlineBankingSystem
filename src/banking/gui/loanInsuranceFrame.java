@@ -43,6 +43,7 @@ public class loanInsuranceFrame extends javax.swing.JFrame {
     private void wireListeners() {
         jButton1.addActionListener(e -> handleLoanApplication());
         jButton2.addActionListener(e -> handleInsuranceClaim());
+        backButton.addActionListener(e -> dispose());
     }
 
     private void loadAccounts() {
@@ -174,6 +175,7 @@ public class loanInsuranceFrame extends javax.swing.JFrame {
 
         jPanel1 = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
+        backButton = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
         jLabel9 = new javax.swing.JLabel();
         jPanel3 = new javax.swing.JPanel();
@@ -200,7 +202,7 @@ public class loanInsuranceFrame extends javax.swing.JFrame {
         jLabel3 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Nova Bank System - Loan & Insurance");
 
         jPanel1.setBackground(new java.awt.Color(255, 255, 255));
@@ -210,6 +212,12 @@ public class loanInsuranceFrame extends javax.swing.JFrame {
 
         jPanel2.setBackground(new java.awt.Color(11, 60, 93));
         jPanel2.setPreferredSize(new java.awt.Dimension(800, 500));
+
+        backButton.setBackground(new java.awt.Color(245, 197, 24));
+        backButton.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        backButton.setForeground(new java.awt.Color(0, 0, 0));
+        backButton.setText("<Dashboard");
+        backButton.addActionListener(this::backButtonActionPerformed);
 
         jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 32)); // NOI18N
         jLabel1.setForeground(new java.awt.Color(255, 255, 255));
@@ -223,27 +231,32 @@ public class loanInsuranceFrame extends javax.swing.JFrame {
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                .addContainerGap(280, Short.MAX_VALUE)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addGap(16, 16, 16)
+                .addComponent(backButton)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel9, javax.swing.GroupLayout.PREFERRED_SIZE, 296, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                        .addComponent(jLabel1)
-                        .addGap(17, 17, 17)))
-                .addGap(224, 224, 224))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addGap(175, 175, 175)
+                        .addComponent(jLabel1))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addGap(162, 162, 162)
+                        .addComponent(jLabel9, javax.swing.GroupLayout.PREFERRED_SIZE, 324, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(181, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jLabel1)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGap(13, 13, 13)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel1)
+                    .addComponent(backButton, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel9)
-                .addGap(15, 15, 15))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         jPanel1.add(jPanel2);
-        jPanel2.setBounds(0, 0, 800, 80);
+        jPanel2.setBounds(0, 0, 800, 90);
 
         jPanel3.setBackground(new java.awt.Color(255, 255, 255));
 
@@ -253,7 +266,7 @@ public class loanInsuranceFrame extends javax.swing.JFrame {
         jPanel5.setBackground(new java.awt.Color(255, 102, 102));
 
         jLabel6.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
-        jLabel6.setForeground(new java.awt.Color(51, 51, 51));
+        jLabel6.setForeground(new java.awt.Color(0, 0, 0));
         jLabel6.setText("Apply for loan");
 
         javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
@@ -274,7 +287,7 @@ public class loanInsuranceFrame extends javax.swing.JFrame {
         );
 
         jComboBox1.setBackground(new java.awt.Color(204, 204, 204));
-        jComboBox1.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
+        jComboBox1.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         jComboBox1.setForeground(new java.awt.Color(0, 0, 0));
         jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
         jComboBox1.addActionListener(this::jComboBox1ActionPerformed);
@@ -294,7 +307,7 @@ public class loanInsuranceFrame extends javax.swing.JFrame {
         jButton1.addActionListener(this::jButton1ActionPerformed);
 
         jTextField1.setBackground(new java.awt.Color(204, 204, 204));
-        jTextField1.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
+        jTextField1.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         jTextField1.setForeground(new java.awt.Color(0, 0, 0));
         jTextField1.setText("0");
 
@@ -327,7 +340,7 @@ public class loanInsuranceFrame extends javax.swing.JFrame {
                 .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(16, Short.MAX_VALUE))
+                .addContainerGap(19, Short.MAX_VALUE))
         );
 
         jPanel7.setBackground(new java.awt.Color(204, 204, 204));
@@ -336,7 +349,7 @@ public class loanInsuranceFrame extends javax.swing.JFrame {
         jPanel6.setBackground(new java.awt.Color(204, 255, 204));
 
         jLabel7.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
-        jLabel7.setForeground(new java.awt.Color(51, 51, 51));
+        jLabel7.setForeground(new java.awt.Color(0, 0, 0));
         jLabel7.setText("Claim insurance");
 
         javax.swing.GroupLayout jPanel6Layout = new javax.swing.GroupLayout(jPanel6);
@@ -361,7 +374,7 @@ public class loanInsuranceFrame extends javax.swing.JFrame {
         jLabel11.setText("Select account");
 
         jComboBox3.setBackground(new java.awt.Color(204, 204, 204));
-        jComboBox3.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
+        jComboBox3.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         jComboBox3.setForeground(new java.awt.Color(0, 0, 0));
         jComboBox3.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
 
@@ -370,7 +383,7 @@ public class loanInsuranceFrame extends javax.swing.JFrame {
         jLabel12.setText("Claim reasson");
 
         jComboBox4.setBackground(new java.awt.Color(204, 204, 204));
-        jComboBox4.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
+        jComboBox4.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         jComboBox4.setForeground(new java.awt.Color(0, 0, 0));
         jComboBox4.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
 
@@ -445,7 +458,7 @@ public class loanInsuranceFrame extends javax.swing.JFrame {
         jPanel9Layout.setVerticalGroup(
             jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel9Layout.createSequentialGroup()
-                .addGap(15, 15, 15)
+                .addGap(9, 9, 9)
                 .addComponent(jLabel4)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel5)
@@ -477,7 +490,7 @@ public class loanInsuranceFrame extends javax.swing.JFrame {
         jPanel10Layout.setVerticalGroup(
             jPanel10Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel10Layout.createSequentialGroup()
-                .addGap(15, 15, 15)
+                .addContainerGap()
                 .addComponent(jLabel3)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel2)
@@ -502,11 +515,11 @@ public class loanInsuranceFrame extends javax.swing.JFrame {
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
-                .addContainerGap(14, Short.MAX_VALUE)
+                .addContainerGap(26, Short.MAX_VALUE)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jPanel9, javax.swing.GroupLayout.DEFAULT_SIZE, 78, Short.MAX_VALUE)
-                    .addComponent(jPanel10, javax.swing.GroupLayout.DEFAULT_SIZE, 78, Short.MAX_VALUE))
-                .addGap(18, 18, 18)
+                    .addComponent(jPanel10, javax.swing.GroupLayout.DEFAULT_SIZE, 72, Short.MAX_VALUE)
+                    .addComponent(jPanel9, javax.swing.GroupLayout.DEFAULT_SIZE, 72, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jPanel7, javax.swing.GroupLayout.PREFERRED_SIZE, 298, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, 298, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -544,6 +557,10 @@ public class loanInsuranceFrame extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_jComboBox1ActionPerformed
 
+    private void backButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_backButtonActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_backButtonActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -570,6 +587,7 @@ public class loanInsuranceFrame extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton backButton;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JComboBox<String> jComboBox1;

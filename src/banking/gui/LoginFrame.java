@@ -15,6 +15,7 @@ import banking.core.user.Admin;
 import banking.core.user.Client;
 import banking.core.user.User;
 import banking.exception.BankException;
+import banking.exception.InvalidLoginException;
 import banking.service.AuthService;
 import javax.swing.JOptionPane;
 
@@ -43,18 +44,19 @@ public class LoginFrame extends javax.swing.JFrame {
 
     /** Validates credentials via AuthService and routes to the correct dashboard */
     private void handleLogin() {
-        try {
-            String email = jTextField1.getText().trim();
-            String password = new String(jPasswordField1.getPassword());
+        String email = jTextField1.getText().trim();
+        String password = new String(jPasswordField1.getPassword());
 
+        try {
             if (email.isEmpty() || password.isEmpty()) {
                 throw new BankException("Please enter both email and password.");
             }
 
             User user = AuthService.get().login(email, password);
+            ensureClientCanAccess(user);
             failedAttempts = 0;
             routeTo(user);
-        } catch (BankException ex) {
+        } catch (InvalidLoginException ex) {
             failedAttempts++;
             int remaining = MAX_ATTEMPTS - failedAttempts;
 
@@ -68,6 +70,20 @@ public class LoginFrame extends javax.swing.JFrame {
                         ex.getMessage() + "\nAttempts remaining: " + remaining,
                         "Login Failed", JOptionPane.ERROR_MESSAGE);
             }
+        } catch (BankException ex) {
+            JOptionPane.showMessageDialog(this,
+                    ex.getMessage(),
+                    "Login Unavailable", JOptionPane.WARNING_MESSAGE);
+        }
+    }
+
+    private void ensureClientCanAccess(User user) {
+        if (user instanceof Client client && client.getAccounts().isEmpty()) {
+            AuthService.get().logout();
+            throw new BankException(
+                    "Your profile is registered, but no bank account has been created yet.\n"
+                    + "Please ask an admin to create an account before logging in."
+            );
         }
     }
 

@@ -34,6 +34,7 @@ public class AuthService {
       
       try {
           users.addAll(fileManager.loadUsers());
+          fileManager.loadAccounts(users);
       }
       catch (FileAccessException ignored) {
           // first run - no file yet, start with an empty list

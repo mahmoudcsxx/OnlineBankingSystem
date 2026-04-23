@@ -99,9 +99,9 @@ public class ClientDashboardFrame extends javax.swing.JFrame {
     }
     
     /**
-     * Opens the Deposit / Withdraw frame for the current client.
+     * Opens the Deposit / Withdraw panel for the current client.
      * Both the Deposit (jButton3) and Withdraw (jButton4) buttons call this
-     * method — the DepositWithdrawFrame handles the mode internally.
+     * method — the DepositWithdrawPanel handles both actions internally.
      */
     private void openDepositWithdraw() {
         Client client = getCurrentClient();
@@ -109,7 +109,7 @@ public class ClientDashboardFrame extends javax.swing.JFrame {
             showError("No client is logged in.");
             return;
         }
-        new DepositWithdrawFrame(client).setVisible(true);
+        DepositWithdrawPanel.openWindow(client);
     }
 
     /**
@@ -121,7 +121,7 @@ public class ClientDashboardFrame extends javax.swing.JFrame {
             showError("No client is logged in.");
             return;
         }
-        new TransferPanel().setVisible(true);
+        TransferPanel.openWindow(client, AuthService.get().getUsers());
     }
 
     /**
@@ -305,6 +305,7 @@ public class ClientDashboardFrame extends javax.swing.JFrame {
         jButton7.setText("Loan & Insurance");
 
         jLabel2.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        jLabel2.setForeground(new java.awt.Color(0, 0, 0));
         jLabel2.setText("Choose a service to continue");
 
         javax.swing.GroupLayout RightLayout = new javax.swing.GroupLayout(Right);
@@ -317,16 +318,16 @@ public class ClientDashboardFrame extends javax.swing.JFrame {
                         .addGap(202, 202, 202)
                         .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 282, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(RightLayout.createSequentialGroup()
-                        .addGap(17, 17, 17)
+                        .addGap(29, 29, 29)
                         .addGroup(RightLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 549, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 430, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 549, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 549, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 549, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jButton5, javax.swing.GroupLayout.PREFERRED_SIZE, 549, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jButton7, javax.swing.GroupLayout.PREFERRED_SIZE, 549, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jButton6, javax.swing.GroupLayout.PREFERRED_SIZE, 549, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addContainerGap(234, Short.MAX_VALUE))
+                            .addComponent(jButton6, javax.swing.GroupLayout.PREFERRED_SIZE, 549, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 430, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addContainerGap(222, Short.MAX_VALUE))
         );
         RightLayout.setVerticalGroup(
             RightLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -340,7 +341,7 @@ public class ClientDashboardFrame extends javax.swing.JFrame {
                 .addGap(18, 18, 18)
                 .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
-                .addComponent(jButton4, javax.swing.GroupLayout.DEFAULT_SIZE, 47, Short.MAX_VALUE)
+                .addComponent(jButton4, javax.swing.GroupLayout.DEFAULT_SIZE, 49, Short.MAX_VALUE)
                 .addGap(18, 18, 18)
                 .addComponent(jButton5, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)

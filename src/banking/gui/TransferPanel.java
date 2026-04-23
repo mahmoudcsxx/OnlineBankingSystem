@@ -4,6 +4,8 @@
  */
 package banking.gui;
 import banking.core.account.Account;
+import banking.core.transaction.Transaction;
+import banking.core.transaction.Transfer;
 import banking.core.user.Client;
 import banking.exception.BankException;
 import banking.exception.TransferFailedException;
@@ -13,6 +15,7 @@ import banking.core.user.User;
 import java.util.List;
 import banking.exception.InvalidAmountException;
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 /**
  *
@@ -40,6 +43,15 @@ private final FileManager fileManager = new FileManager("data/bank");
     loadFromAccounts();
     loadToAccounts();
     wireListeners();
+}
+
+public static void openWindow(Client user, List<User> users) {
+    JFrame frame = new JFrame("Nova Bank System - Transfer");
+    frame.setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+    frame.setContentPane(new TransferPanel(user, users));
+    frame.pack();
+    frame.setLocationRelativeTo(null);
+    frame.setVisible(true);
 }
     
     /**
@@ -225,8 +237,6 @@ private final FileManager fileManager = new FileManager("data/bank");
         LblSending1.setForeground(new java.awt.Color(245, 197, 24));
         LblSending1.setText("@2026 NovaBank. All rights reserved");
 
-        jLabel2.setIcon(new javax.swing.ImageIcon("C:\\Users\\ZINAB\\Downloads\\Untitled design (8).png")); // NOI18N
-
         javax.swing.GroupLayout LeftPanelLayout = new javax.swing.GroupLayout(LeftPanel);
         LeftPanel.setLayout(LeftPanelLayout);
         LeftPanelLayout.setHorizontalGroup(
@@ -241,8 +251,8 @@ private final FileManager fileManager = new FileManager("data/bank");
                         .addGroup(LeftPanelLayout.createSequentialGroup()
                             .addGap(20, 20, 20)
                             .addComponent(jLabel2)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                            .addGroup(LeftPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGap(22, 22, 22)
+                            .addGroup(LeftPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                                 .addComponent(lblTagline1)
                                 .addComponent(LablBrandName1)))))
                 .addContainerGap(23, Short.MAX_VALUE))
@@ -281,14 +291,13 @@ private final FileManager fileManager = new FileManager("data/bank");
                 .addGroup(LeftPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(LeftPanelLayout.createSequentialGroup()
                         .addGap(20, 20, 20)
-                        .addGroup(LeftPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(LablBrandName1)
-                            .addComponent(jLabel2))
-                        .addGap(12, 12, 12))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, LeftPanelLayout.createSequentialGroup()
+                        .addComponent(jLabel2))
+                    .addGroup(LeftPanelLayout.createSequentialGroup()
                         .addContainerGap()
-                        .addComponent(lblTagline1, javax.swing.GroupLayout.PREFERRED_SIZE, 11, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)))
+                        .addComponent(LablBrandName1)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(lblTagline1, javax.swing.GroupLayout.PREFERRED_SIZE, 11, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
                 .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, 16, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(FromCard, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -310,16 +319,18 @@ private final FileManager fileManager = new FileManager("data/bank");
                 .addComponent(LblSendingBal)
                 .addGap(18, 18, 18)
                 .addComponent(LblSending1)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(22, Short.MAX_VALUE))
         );
 
         add(LeftPanel, java.awt.BorderLayout.LINE_START);
 
         navBar.setBackground(new java.awt.Color(12, 55, 79));
 
-        ButtonNav.setBackground(new java.awt.Color(12, 55, 79));
-        ButtonNav.setForeground(new java.awt.Color(255, 255, 255));
-        ButtonNav.setText("< Dashboard");
+        ButtonNav.setBackground(new java.awt.Color(245, 197, 24));
+        ButtonNav.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        ButtonNav.setForeground(new java.awt.Color(0, 0, 0));
+        ButtonNav.setText("<Dashboard");
+        ButtonNav.addActionListener(this::ButtonNavActionPerformed);
 
         jLabel3.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
         jLabel3.setForeground(new java.awt.Color(31, 115, 126));
@@ -426,17 +437,19 @@ private final FileManager fileManager = new FileManager("data/bank");
                         .addGap(34, 34, 34)
                         .addGroup(RightPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(reuirmentlbl)
-                            .addComponent(tacount)
-                            .addComponent(FrAcoubr)
-                            .addComponent(jComboBoxAccount, javax.swing.GroupLayout.PREFERRED_SIZE, 239, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(ammountright)
-                            .addComponent(LablMovefunds)
-                            .addGroup(RightPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.LEADING)
-                                .addComponent(jComboBoxAccount1, javax.swing.GroupLayout.Alignment.LEADING, 0, 239, Short.MAX_VALUE))))
+                            .addComponent(LablMovefunds)))
                     .addGroup(RightPanelLayout.createSequentialGroup()
-                        .addGap(77, 77, 77)
-                        .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 219, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGap(50, 50, 50)
+                        .addGroup(RightPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(FrAcoubr)
+                            .addGroup(RightPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                .addComponent(jComboBoxAccount, javax.swing.GroupLayout.PREFERRED_SIZE, 239, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGroup(RightPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(ammountright)
+                                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 239, Short.MAX_VALUE)
+                                    .addComponent(jComboBoxAccount1, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                .addComponent(tacount, javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(jButton1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 239, javax.swing.GroupLayout.PREFERRED_SIZE)))))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         RightPanelLayout.setVerticalGroup(
@@ -461,7 +474,7 @@ private final FileManager fileManager = new FileManager("data/bank");
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(27, 27, 27)
                 .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(58, Short.MAX_VALUE))
+                .addContainerGap(50, Short.MAX_VALUE))
         );
 
         add(RightPanel, java.awt.BorderLayout.CENTER);
@@ -470,6 +483,10 @@ private final FileManager fileManager = new FileManager("data/bank");
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
 
     }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void ButtonNavActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ButtonNavActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_ButtonNavActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -625,6 +642,14 @@ private List<Account> collectAllAccounts() {
     return all;
 }
 
+private List<Transaction> collectAllTransactions() {
+    List<Transaction> all = new ArrayList<>();
+    for (Account account : collectAllAccounts()) {
+        all.addAll(account.getTransactionHistory().getHistory());
+    }
+    return all;
+}
+
  private void handleTransfer() {
         try {
             int fromIdx = jComboBoxAccount.getSelectedIndex();
@@ -657,9 +682,13 @@ private List<Account> collectAllAccounts() {
                 throw new TransferFailedException("Insufficient funds.");
             }
 
-            from.withdraw(amount);
-            to.deposit(amount);
-fileManager.saveAccounts(new ArrayList<>(collectAllAccounts()));
+            Transfer transfer = new Transfer(null, amount, from, to);
+            transfer.execute();
+            from.getTransactionHistory().addTransaction(transfer);
+            to.getTransactionHistory().addTransaction(transfer);
+
+            fileManager.saveAccounts(new ArrayList<>(collectAllAccounts()));
+            fileManager.saveTransactions(new ArrayList<>(collectAllTransactions()));
             JOptionPane.showMessageDialog(this,
                 "Transferred $" + String.format("%.2f", amount)
                 + " from " + from.getAccountNumber()

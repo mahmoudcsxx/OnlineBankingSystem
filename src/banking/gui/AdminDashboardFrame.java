@@ -10,11 +10,22 @@
  */
 package banking.gui;
 
+import banking.common.AccountStatus;
+import banking.common.AccountType;
+import banking.common.ClientType;
 import banking.core.account.Account;
+import banking.core.account.BusinessAccount;
+import banking.core.account.CurrentAccount;
+import banking.core.account.SavingsAccount;
 import banking.core.user.Client;
+import banking.core.user.FirstClassClient;
+import banking.core.user.PremiumClient;
+import banking.core.user.StandardClient;
 import banking.core.user.User;
 import banking.exception.AccountNotFoundException;
 import banking.exception.BankException;
+import banking.persistence.FileManager;
+import banking.core.transaction.TransactionHistory;
 import banking.service.AuthService;
 import java.util.ArrayList;
 import javax.swing.JOptionPane;
@@ -22,6 +33,7 @@ import javax.swing.JOptionPane;
 public class AdminDashboardFrame extends javax.swing.JFrame {
 
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(AdminDashboardFrame.class.getName());
+    private final FileManager fileManager = new FileManager("data/bank");
 
     /**
      * Creates new form AdminDashboardFrame
@@ -39,6 +51,7 @@ public class AdminDashboardFrame extends javax.swing.JFrame {
         jButton4.addActionListener(e -> handleViewAccounts());
         jButton5.addActionListener(e -> handleRemoveUser());
         jButton6.addActionListener(e -> handleCreateClient());
+        jButton7.addActionListener(e -> handleCreateAccount());
     }
 
     /** Logs out and returns to the login screen */
@@ -113,6 +126,8 @@ public class AdminDashboardFrame extends javax.swing.JFrame {
             }
 
             users.remove(target);
+            fileManager.saveUsers(users);
+            fileManager.saveAccounts(collectAllAccounts());
             JOptionPane.showMessageDialog(this,
                     "Removed user: " + target.getName(),
                     "Success", JOptionPane.INFORMATION_MESSAGE);
@@ -121,7 +136,7 @@ public class AdminDashboardFrame extends javax.swing.JFrame {
         }
     }
 
-    /** Creates a new StandardClient from a small prompt dialog flow */
+    /** Creates a new client from a small prompt dialog flow */
     private void handleCreateClient() {
         try {
             String name = prompt("New client — full name:");
@@ -132,14 +147,55 @@ public class AdminDashboardFrame extends javax.swing.JFrame {
             if (password == null || password.isBlank()) return;
             String phone = prompt("Phone number:");
             if (phone == null || phone.isBlank()) return;
+            ClientType clientType = chooseClientType();
+            if (clientType == null) return;
 
             String userId = java.util.UUID.randomUUID().toString().substring(0, 8);
-            banking.core.user.StandardClient client =
-                    new banking.core.user.StandardClient(userId, name, email, password, phone, 1000.0);
+            Client client = buildClientFor(clientType, userId, name, email, password, phone);
 
             AuthService.get().register(client);
             JOptionPane.showMessageDialog(this,
-                    "Client created: " + name,
+                    clientType + " client created: " + name,
+                    "Success", JOptionPane.INFORMATION_MESSAGE);
+        } catch (BankException ex) {
+            showError(ex.getMessage());
+        }
+    }
+
+    /** Creates an account for an existing client and persists all accounts */
+    private void handleCreateAccount() {
+        try {
+            String email = prompt("Enter the client email:");
+            if (email == null || email.isBlank()) return;
+
+            Client client = findClientByEmail(email);
+            if (client == null) {
+                throw new BankException("No client found with email: " + email);
+            }
+
+            AccountType accountType = chooseAccountType();
+            if (accountType == null) return;
+
+            String openingBalanceText = prompt("Opening balance:");
+            if (openingBalanceText == null || openingBalanceText.isBlank()) return;
+
+            double openingBalance;
+            try {
+                openingBalance = Double.parseDouble(openingBalanceText.trim());
+            } catch (NumberFormatException ex) {
+                throw new BankException("Opening balance must be a valid number.");
+            }
+            if (openingBalance < 0) {
+                throw new BankException("Opening balance cannot be negative.");
+            }
+
+            Account account = buildAccountFor(client, accountType, openingBalance);
+            client.addAccount(account);
+            fileManager.saveAccounts(collectAllAccounts());
+
+            JOptionPane.showMessageDialog(this,
+                    "Created " + accountType + " account " + account.getAccountNumber()
+                            + " for " + client.getName(),
                     "Success", JOptionPane.INFORMATION_MESSAGE);
         } catch (BankException ex) {
             showError(ex.getMessage());
@@ -155,6 +211,76 @@ public class AdminDashboardFrame extends javax.swing.JFrame {
             }
         }
         return all;
+    }
+
+    private Client findClientByEmail(String email) {
+        for (User user : AuthService.get().getUsers()) {
+            if (user instanceof Client && email.equalsIgnoreCase(user.getEmail())) {
+                return (Client) user;
+            }
+        }
+        return null;
+    }
+
+    private AccountType chooseAccountType() {
+        Object selected = JOptionPane.showInputDialog(
+                this,
+                "Choose account type:",
+                "Create Account",
+                JOptionPane.PLAIN_MESSAGE,
+                null,
+                AccountType.values(),
+                AccountType.SAVINGS
+        );
+        return selected instanceof AccountType ? (AccountType) selected : null;
+    }
+
+    private ClientType chooseClientType() {
+        Object selected = JOptionPane.showInputDialog(
+                this,
+                "Choose client type:",
+                "Create Client",
+                JOptionPane.PLAIN_MESSAGE,
+                null,
+                ClientType.values(),
+                ClientType.STANDARD
+        );
+        return selected instanceof ClientType ? (ClientType) selected : null;
+    }
+
+    private Client buildClientFor(ClientType clientType, String userId, String name,
+                                  String email, String password, String phone) {
+        switch (clientType) {
+            case PREMIUM:
+                return new PremiumClient(userId, name, email, password, phone, 50000.0, 10000.0);
+            case FIRST_CLASS:
+                return new FirstClassClient(userId, name, email, password, phone, 1, 100000.0, 25000.0);
+            case STANDARD:
+            default:
+                return new StandardClient(userId, name, email, password, phone, 1000.0);
+        }
+    }
+
+    private Account buildAccountFor(Client client, AccountType accountType, double openingBalance) {
+        String accountNumber = "ACC-" + java.util.UUID.randomUUID().toString().substring(0, 8).toUpperCase();
+        TransactionHistory history = new TransactionHistory();
+
+        switch (accountType) {
+            case CURRENT:
+                return new CurrentAccount(accountNumber, openingBalance, client,
+                        AccountStatus.ACTIVE, history, 1000.0);
+            case BUSINESS:
+                String businessName = prompt("Business name:");
+                if (businessName == null || businessName.isBlank()) {
+                    businessName = client.getName() + " Business";
+                }
+                return new BusinessAccount(accountNumber, openingBalance, client,
+                        AccountStatus.ACTIVE, history, businessName);
+            case SAVINGS:
+            default:
+                return new SavingsAccount(accountNumber, openingBalance, client,
+                        AccountStatus.ACTIVE, history, 0.05);
+        }
     }
 
     /** Small wrapper for JOptionPane input prompts */
@@ -191,6 +317,7 @@ public class AdminDashboardFrame extends javax.swing.JFrame {
         jButton4 = new javax.swing.JButton();
         jButton5 = new javax.swing.JButton();
         jButton6 = new javax.swing.JButton();
+        jButton7 = new javax.swing.JButton();
         jLabel4 = new javax.swing.JLabel();
 
         jButton1.setBackground(new java.awt.Color(255, 0, 0));
@@ -200,8 +327,9 @@ public class AdminDashboardFrame extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Nova Bank System - Admin Dashboard");
-        setPreferredSize(new java.awt.Dimension(800, 570));
-        setSize(new java.awt.Dimension(800, 570));
+        setPreferredSize(new java.awt.Dimension(800, 580));
+        setResizable(false);
+        setSize(new java.awt.Dimension(800, 580));
         getContentPane().setLayout(null);
 
         Right.setBackground(new java.awt.Color(255, 255, 255));
@@ -224,7 +352,7 @@ public class AdminDashboardFrame extends javax.swing.JFrame {
 
         jButton2.setBackground(new java.awt.Color(255, 0, 0));
         jButton2.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        jButton2.setForeground(new java.awt.Color(51, 51, 51));
+        jButton2.setForeground(new java.awt.Color(255, 255, 255));
         jButton2.setText("Logout");
 
         jLabel3.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
@@ -235,6 +363,9 @@ public class AdminDashboardFrame extends javax.swing.JFrame {
         Left.setLayout(LeftLayout);
         LeftLayout.setHorizontalGroup(
             LeftLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, LeftLayout.createSequentialGroup()
+                .addGap(0, 14, Short.MAX_VALUE)
+                .addComponent(jLabel10, javax.swing.GroupLayout.PREFERRED_SIZE, 186, javax.swing.GroupLayout.PREFERRED_SIZE))
             .addGroup(LeftLayout.createSequentialGroup()
                 .addGroup(LeftLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(LeftLayout.createSequentialGroup()
@@ -247,15 +378,11 @@ public class AdminDashboardFrame extends javax.swing.JFrame {
                             .addComponent(jLabel11, javax.swing.GroupLayout.Alignment.TRAILING)))
                     .addGroup(LeftLayout.createSequentialGroup()
                         .addGap(21, 21, 21)
-                        .addComponent(jLabel3)))
-                .addContainerGap(26, Short.MAX_VALUE))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, LeftLayout.createSequentialGroup()
-                .addGap(0, 0, Short.MAX_VALUE)
-                .addGroup(LeftLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel10, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 186, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, LeftLayout.createSequentialGroup()
-                        .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 92, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(52, 52, 52))))
+                        .addComponent(jLabel3))
+                    .addGroup(LeftLayout.createSequentialGroup()
+                        .addGap(46, 46, 46)
+                        .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         LeftLayout.setVerticalGroup(
             LeftLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -270,9 +397,9 @@ public class AdminDashboardFrame extends javax.swing.JFrame {
                 .addComponent(jLabel9)
                 .addGap(86, 86, 86)
                 .addComponent(jLabel10)
-                .addGap(30, 30, 30)
-                .addComponent(jButton2)
-                .addContainerGap(47, Short.MAX_VALUE))
+                .addGap(27, 27, 27)
+                .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(38, Short.MAX_VALUE))
         );
 
         jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 40)); // NOI18N
@@ -304,8 +431,14 @@ public class AdminDashboardFrame extends javax.swing.JFrame {
         jButton6.setBackground(new java.awt.Color(11, 60, 93));
         jButton6.setFont(new java.awt.Font("Segoe UI", 1, 20)); // NOI18N
         jButton6.setForeground(new java.awt.Color(255, 255, 255));
-        jButton6.setText("Create standard client");
+        jButton6.setText("Create client");
         jButton6.addActionListener(this::jButton6ActionPerformed);
+
+        jButton7.setBackground(new java.awt.Color(11, 60, 93));
+        jButton7.setFont(new java.awt.Font("Segoe UI", 1, 20)); // NOI18N
+        jButton7.setForeground(new java.awt.Color(255, 255, 255));
+        jButton7.setText("Create client account");
+        jButton7.addActionListener(this::jButton7ActionPerformed);
 
         jLabel4.setBackground(new java.awt.Color(0, 0, 0));
         jLabel4.setFont(new java.awt.Font("Segoe UI", 1, 20)); // NOI18N
@@ -318,27 +451,19 @@ public class AdminDashboardFrame extends javax.swing.JFrame {
             RightLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(RightLayout.createSequentialGroup()
                 .addComponent(Left, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
                 .addGroup(RightLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(RightLayout.createSequentialGroup()
-                        .addGroup(RightLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(RightLayout.createSequentialGroup()
-                                .addGap(216, 216, 216)
-                                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 232, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(RightLayout.createSequentialGroup()
-                                .addGap(18, 18, 18)
-                                .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 430, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(RightLayout.createSequentialGroup()
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 217, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addContainerGap(152, Short.MAX_VALUE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, RightLayout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGroup(RightLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 517, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 517, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jButton5, javax.swing.GroupLayout.PREFERRED_SIZE, 517, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jButton6, javax.swing.GroupLayout.PREFERRED_SIZE, 517, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(40, 40, 40))))
+                    .addGroup(RightLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                        .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 430, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 232, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 217, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(RightLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addComponent(jButton4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 552, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jButton5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jButton6, javax.swing.GroupLayout.DEFAULT_SIZE, 555, Short.MAX_VALUE)
+                        .addComponent(jButton7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                .addContainerGap(27, Short.MAX_VALUE))
         );
         RightLayout.setVerticalGroup(
             RightLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -348,23 +473,25 @@ public class AdminDashboardFrame extends javax.swing.JFrame {
             .addGroup(RightLayout.createSequentialGroup()
                 .addGap(25, 25, 25)
                 .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 65, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(44, 44, 44)
+                .addGap(18, 18, 18)
                 .addComponent(jLabel2)
-                .addGap(44, 44, 44)
-                .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
-                .addComponent(jButton5, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(jButton6, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(45, 45, 45)
+                .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jButton5, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jButton6, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jButton7, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jLabel4)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(26, 26, 26))
         );
 
         getContentPane().add(Right);
-        Right.setBounds(0, 0, 800, 541);
+        Right.setBounds(0, 0, 800, 545);
 
         getAccessibleContext().setAccessibleName("Client Dashboard");
 
@@ -386,6 +513,10 @@ public class AdminDashboardFrame extends javax.swing.JFrame {
     private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_jButton6ActionPerformed
+
+    private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton7ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jButton7ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -421,6 +552,7 @@ public class AdminDashboardFrame extends javax.swing.JFrame {
     private javax.swing.JButton jButton4;
     private javax.swing.JButton jButton5;
     private javax.swing.JButton jButton6;
+    private javax.swing.JButton jButton7;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
