@@ -172,12 +172,10 @@ public class HistoryPanel extends javax.swing.JFrame {
         jLabel3.setForeground(new java.awt.Color(220, 230, 238));
         jLabel3.setText("Loading...");
 
-        jButton1.setBackground(new java.awt.Color(255, 255, 255));
         jButton1.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         jButton1.setForeground(new java.awt.Color(11, 60, 93));
         jButton1.setText("Refresh");
 
-        jButton2.setBackground(new java.awt.Color(255, 255, 255));
         jButton2.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         jButton2.setForeground(new java.awt.Color(11, 60, 93));
         jButton2.setText("Close");
@@ -219,7 +217,6 @@ public class HistoryPanel extends javax.swing.JFrame {
         jScrollPane1.setViewportView(jTable1);
 
         jLabel2.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
-        jLabel2.setForeground(new java.awt.Color(0, 0, 0));
         jLabel2.setText("Recent transactions");
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);

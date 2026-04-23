@@ -15,7 +15,7 @@ package banking.exception;
  * TransferFailedException is thrown when a money transfer cannot be completed.
  * Example: insufficient funds, invalid account, system error during transfer.
  */
-public class TransferFailedException extends Exception {
+public class TransferFailedException extends BankException {
 
     /**
      * Constructor for TransferFailedException

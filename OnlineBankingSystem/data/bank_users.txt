@@ -1,2 +1,5 @@
 A001,Admin,admin@novabank.com,admin123,ADMIN,
 237c4f86,Youssef Hassan,youssef@gmail.com,youssef123,STANDARD,01159010200
+c1ae6d91,lili,lili@gmail.com,123456,STANDARD,0112458532
+fc32ecfc,zainab,z@gmail.com,123,STANDARD,01267393
+dfa7e6f8,zaunab,s@gmail.com,123,STANDARD,0183821234
