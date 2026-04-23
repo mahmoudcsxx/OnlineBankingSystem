@@ -17,6 +17,8 @@ import banking.core.account.SavingsAccount;
 import banking.core.transaction.Deposit;
 import banking.core.transaction.Transaction;
 import banking.core.transaction.TransactionHistory;
+import banking.core.user.Admin;
+import banking.core.user.Client;
 import banking.core.user.StandardClient;
 import banking.core.user.User;
 
@@ -45,15 +47,17 @@ public class FileManager {
 
     /**
      * Saves all users to a text file (_users.txt).
-     * Each line format: userId,name,password,STANDARD
+     * Each line format: userId,name,email,password,role[,phone]
      * @param users the list of users to save
      */
     public void saveUsers(ArrayList<User> users) {
         try (PrintWriter writer = new PrintWriter(filePath + "_users.txt")) {
             for (int i = 0; i < users.size(); i++) {
                 User u = users.get(i);
-                // Write each user's details as a comma-separated line
-                writer.println(u.getUserId() + "," + u.getName() + "," + u.getPassword() + ",STANDARD");
+                String role = u instanceof Admin ? "ADMIN" : "STANDARD";
+                String phone = u instanceof Client ? ((Client) u).getPhoneNumber() : "";
+                writer.println(u.getUserId() + "," + u.getName() + "," + u.getEmail()
+                        + "," + u.getPassword() + "," + role + "," + phone);
             }
         } catch (FileNotFoundException e) {
             System.out.println("Error saving users: " + e.getMessage());
@@ -79,8 +83,7 @@ public class FileManager {
 
     /**
      * Saves all transactions to a text file (_transactions.txt).
-     * Each line format: transactionId,amount,type,accountNumber
-     * Only Deposit transactions include a linked account number.
+     * Each line format: transactionId,amount,type,accountNumber,status,date
      * @param transactions the list of transactions to save
      */
     public void saveTransactions(ArrayList<Transaction> transactions) {
@@ -88,14 +91,14 @@ public class FileManager {
             for (int i = 0; i < transactions.size(); i++) {
                 Transaction t = transactions.get(i);
 
-                // Only Deposit transactions have an associated account to retrieve
                 String accountNumber = "";
-                if (t instanceof Deposit) {
-                    accountNumber = ((Deposit) t).getAccount().getAccountNumber();
+                if (t.getAccount() != null) {
+                    accountNumber = t.getAccount().getAccountNumber();
                 }
 
-                // Write transaction details as a comma-separated line
-                writer.println(t.getTransactionId() + "," + t.getAmount() + "," + t.getType() + "," + accountNumber);
+                writer.println(t.getTransactionId() + "," + t.getAmount() + ","
+                        + t.getType() + "," + accountNumber + ","
+                        + t.getStatus() + "," + t.getDate());
             }
         } catch (FileNotFoundException e) {
             System.out.println("Error saving transactions: " + e.getMessage());
@@ -106,7 +109,7 @@ public class FileManager {
 
     /**
      * Loads all users from the _users.txt file.
-     * Reconstructs each user as a StandardClient with placeholder phone/email values.
+     * Reconstructs each user according to the saved role.
      * @return list of loaded User objects
      */
     public ArrayList<User> loadUsers() {
@@ -118,12 +121,26 @@ public class FileManager {
                 String line = scanner.nextLine();
                 String[] parts = line.split(",");
 
-                // Ensure the line has at least userId, name, and password
-                if (parts.length >= 3) {
-                    // Reconstruct user as StandardClient (phone and email use placeholders)
-                    User u = new StandardClient(parts[0], parts[1], parts[2],
-                            "phone", "email", 0);
-                    users.add(u);
+                if (parts.length >= 5) {
+                    String role = parts[4].trim();
+                    if ("ADMIN".equalsIgnoreCase(role)) {
+                        users.add(new Admin(parts[0], parts[1], parts[2], parts[3]));
+                    } else {
+                        String phone = parts.length >= 6 ? parts[5] : "";
+                        users.add(new StandardClient(parts[0], parts[1], parts[2],
+                                parts[3], phone, 1000.0));
+                    }
+                } else if (parts.length >= 4) {
+                    String legacyRole = parts[3].trim();
+                    if ("ADMIN".equalsIgnoreCase(legacyRole)) {
+                        users.add(new Admin(parts[0], parts[1], parts[2], "phone"));
+                    } else if ("STANDARD".equalsIgnoreCase(legacyRole)) {
+                        users.add(new StandardClient(parts[0], parts[1], parts[2],
+                                "phone", "", 1000.0));
+                    } else {
+                        users.add(new StandardClient(parts[0], parts[1], parts[2],
+                                parts[3], "", 1000.0));
+                    }
                 }
             }
             scanner.close();

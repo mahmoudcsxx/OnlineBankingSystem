@@ -13,84 +13,284 @@ package banking.gui;
 import banking.core.account.Account;
 import banking.core.transaction.Transaction;
 import banking.core.user.Client;
-import banking.core.user.User;
 import banking.exception.BankException;
-import banking.persistence.FileManager;
-import banking.service.AuthService;
-import java.awt.BorderLayout;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import javax.swing.JFrame;
+import java.util.List;
 import javax.swing.JOptionPane;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
-/**
- * Shows every transaction belonging to the logged-in client in a scrollable table.
- * Transactions are loaded from the _transactions.txt file via FileManager.
- */
-public class HistoryPanel extends JFrame {
+public class HistoryPanel extends javax.swing.JFrame {
+
+    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(HistoryPanel.class.getName());
+    private static final DateTimeFormatter DATE_FORMAT =
+            DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
     private final Client currentUser;
-    private final FileManager fileManager = new FileManager("data/bank");
-    private final DefaultTableModel model = new DefaultTableModel(
-            new Object[]{"Type", "Amount", "Account", "Status"}, 0);
+    private final DefaultTableModel historyModel = new DefaultTableModel(
+            new Object[]{"Date", "Type", "Amount", "Account", "Status"}, 0) {
+        @Override
+        public boolean isCellEditable(int row, int column) {
+            return false;
+        }
+    };
 
     public HistoryPanel(Client user) {
         this.currentUser = user;
-        setTitle("Nova Bank System - Transaction History");
-        setSize(700, 420);
-        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-        setLocationRelativeTo(null);
-
-        JTable table = new JTable(model);
-        add(new JScrollPane(table), BorderLayout.CENTER);
-
+        initComponents();
+        wireListeners();
         loadHistory();
     }
 
-    /** Loads transactions for every account owned by the current client */
+    private void wireListeners() {
+        jButton1.addActionListener(e -> loadHistory());
+        jButton2.addActionListener(e -> dispose());
+    }
+
     private void loadHistory() {
+        historyModel.setRowCount(0);
+
         try {
             if (currentUser == null) {
-                throw new BankException("No user is logged in.");
+                throw new BankException("No client is logged in.");
             }
 
-            // Load every account in the system so FileManager can match IDs,
-            // then filter to the ones that belong to the current client.
-            ArrayList<User> users = AuthService.get().getUsers();
-            ArrayList<Account> allAccounts = fileManager.loadAccounts(users);
-            ArrayList<Transaction> transactions = fileManager.loadTransactions(allAccounts);
-
-            ArrayList<Account> mine = currentUser.getAccounts();
-            int shown = 0;
-            for (Transaction t : transactions) {
-                Account acc = t.getAccount();
-                if (acc != null && ownedByCurrent(mine, acc.getAccountNumber())) {
-                    model.addRow(new Object[]{
-                            t.getType(),
-                            t.getAmount(),
-                            acc.getAccountNumber(),
-                            t.getStatus()
-                    });
-                    shown++;
-                }
+            int shown = loadFromCurrentAccounts();
+            if (shown == 0) {
+                shown = loadFromTransactionFile();
             }
 
             if (shown == 0) {
-                model.addRow(new Object[]{"—", "—", "—", "No transactions yet"});
+                jLabel3.setText("No transactions found for " + currentUser.getName() + ".");
+            } else {
+                jLabel3.setText(shown + " transaction(s) found for " + currentUser.getName() + ".");
             }
         } catch (BankException ex) {
+            jLabel3.setText("Unable to load history.");
             JOptionPane.showMessageDialog(this,
                     ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
-    /** true if the given account number belongs to the current client */
-    private boolean ownedByCurrent(ArrayList<Account> mine, String accountNumber) {
-        for (Account a : mine) {
-            if (a.getAccountNumber().equals(accountNumber)) return true;
+    private int loadFromCurrentAccounts() {
+        int shown = 0;
+        for (Account account : currentUser.getAccounts()) {
+            for (Transaction transaction : account.getTransactionHistory().getHistory()) {
+                addTransactionRow(transaction, account);
+                shown++;
+            }
+        }
+        return shown;
+    }
+
+    private int loadFromTransactionFile() {
+        int shown = 0;
+        try {
+            Path path = Path.of("data", "bank_transactions.txt");
+            if (!Files.exists(path)) {
+                return 0;
+            }
+
+            List<String> lines = Files.readAllLines(path);
+            ArrayList<Account> accounts = currentUser.getAccounts();
+            for (String line : lines) {
+                String[] parts = line.split(",");
+                if (parts.length < 4 || !ownsAccount(accounts, parts[3])) {
+                    continue;
+                }
+
+                historyModel.addRow(new Object[]{
+                        parts.length >= 6 ? parts[5].replace('T', ' ') : "",
+                        parts.length >= 3 ? parts[2] : "",
+                        parts.length >= 2 ? "EGP " + parts[1] : "",
+                        parts[3],
+                        parts.length >= 5 ? parts[4] : ""
+                });
+                shown++;
+            }
+        } catch (IOException ex) {
+            jLabel3.setText("Unable to read saved transaction history.");
+        }
+        return shown;
+    }
+
+    private void addTransactionRow(Transaction transaction, Account account) {
+        historyModel.addRow(new Object[]{
+                transaction.getDate() == null ? "" : transaction.getDate().format(DATE_FORMAT),
+                transaction.getType(),
+                String.format("EGP %.2f", transaction.getAmount()),
+                account == null ? "" : account.getAccountNumber(),
+                transaction.getStatus()
+        });
+    }
+
+    private boolean ownsAccount(ArrayList<Account> accounts, String accountNumber) {
+        for (Account account : accounts) {
+            if (account.getAccountNumber().equals(accountNumber)) {
+                return true;
+            }
         }
         return false;
     }
+
+    /**
+     * This method is called from within the constructor to initialize the form.
+     * WARNING: Do NOT modify this code. The content of this method is always
+     * regenerated by the Form Editor.
+     */
+    @SuppressWarnings("unchecked")
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    private void initComponents() {
+
+        jPanel1 = new javax.swing.JPanel();
+        jPanel2 = new javax.swing.JPanel();
+        jLabel1 = new javax.swing.JLabel();
+        jLabel3 = new javax.swing.JLabel();
+        jButton1 = new javax.swing.JButton();
+        jButton2 = new javax.swing.JButton();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        jTable1 = new javax.swing.JTable();
+        jLabel2 = new javax.swing.JLabel();
+
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setTitle("Nova Bank System - Transaction History");
+        setPreferredSize(new java.awt.Dimension(820, 520));
+        setSize(new java.awt.Dimension(820, 520));
+
+        jPanel1.setBackground(new java.awt.Color(255, 255, 255));
+
+        jPanel2.setBackground(new java.awt.Color(11, 60, 93));
+
+        jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 30)); // NOI18N
+        jLabel1.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel1.setText("Transaction History");
+
+        jLabel3.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        jLabel3.setForeground(new java.awt.Color(220, 230, 238));
+        jLabel3.setText("Loading...");
+
+        jButton1.setBackground(new java.awt.Color(255, 255, 255));
+        jButton1.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        jButton1.setForeground(new java.awt.Color(11, 60, 93));
+        jButton1.setText("Refresh");
+
+        jButton2.setBackground(new java.awt.Color(255, 255, 255));
+        jButton2.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        jButton2.setForeground(new java.awt.Color(11, 60, 93));
+        jButton2.setText("Close");
+
+        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
+        jPanel2.setLayout(jPanel2Layout);
+        jPanel2Layout.setHorizontalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addGap(24, 24, 24)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel1)
+                    .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 420, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 142, Short.MAX_VALUE)
+                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 92, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 92, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(24, 24, 24))
+        );
+        jPanel2Layout.setVerticalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addGap(18, 18, 18)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addComponent(jLabel1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jLabel3)))
+                .addContainerGap(19, Short.MAX_VALUE))
+        );
+
+        jTable1.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        jTable1.setRowHeight(30);
+        jTable1.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        jTable1.setShowGrid(true);
+        jScrollPane1.setViewportView(jTable1);
+
+        jLabel2.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        jLabel2.setForeground(new java.awt.Color(0, 0, 0));
+        jLabel2.setText("Recent transactions");
+
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGap(24, 24, 24)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel2)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 770, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(26, Short.MAX_VALUE))
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(jLabel2)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 330, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(28, Short.MAX_VALUE))
+        );
+
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+        getContentPane().setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        );
+
+        pack();
+        setLocationRelativeTo(null);
+    }// </editor-fold>//GEN-END:initComponents
+
+    /**
+     * @param args the command line arguments
+     */
+    public static void main(String args[]) {
+        /* Set the Nimbus look and feel */
+        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
+        try {
+            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+                if ("Nimbus".equals(info.getName())) {
+                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                    break;
+                }
+            }
+        } catch (ReflectiveOperationException | javax.swing.UnsupportedLookAndFeelException ex) {
+            logger.log(java.util.logging.Level.SEVERE, null, ex);
+        }
+        //</editor-fold>
+
+        /* Create and display the form */
+        java.awt.EventQueue.invokeLater(() -> new HistoryPanel(null).setVisible(true));
+    }
+
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButton2;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JTable jTable1;
+    // End of variables declaration//GEN-END:variables
 }

@@ -37,6 +37,11 @@ public class Deposit extends Transaction {
         System.out.println("Deposited " + amount +
                 " to account " + targetAccount.getAccountNumber());
     }
+
+    @Override
+    public Account getAccount() {
+        return targetAccount;
+    }
 }
 
 

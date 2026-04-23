@@ -10,6 +10,9 @@
 package banking.gui;
 
 import banking.core.account.Account;
+import banking.core.transaction.Deposit;
+import banking.core.transaction.Transaction;
+import banking.core.transaction.Withdrawal;
 import banking.core.user.Client;
 import banking.core.user.User;
 import banking.exception.BankException;
@@ -98,13 +101,14 @@ public class DepositWithdrawFrame extends javax.swing.JFrame {
                 throw new InvalidAmountException("Amount must be greater than zero.");
             }
 
-            if (isDeposit) {
-                account.deposit(amount);
-            } else {
-                account.withdraw(amount);
-            }
+            Transaction transaction = isDeposit
+                    ? new Deposit(account, amount)
+                    : new Withdrawal(account, amount);
+            transaction.execute();
+            account.getTransactionHistory().addTransaction(transaction);
 
             fileManager.saveAccounts(collectAllAccounts());
+            fileManager.saveTransactions(collectAllTransactions());
             refreshBalanceLabel();
             JOptionPane.showMessageDialog(this,
                     (isDeposit ? "Deposited " : "Withdrew ") + amount
@@ -125,6 +129,14 @@ public class DepositWithdrawFrame extends javax.swing.JFrame {
             if (u instanceof Client) {
                 all.addAll(((Client) u).getAccounts());
             }
+        }
+        return all;
+    }
+
+    private ArrayList<Transaction> collectAllTransactions() {
+        ArrayList<Transaction> all = new ArrayList<>();
+        for (Account account : collectAllAccounts()) {
+            all.addAll(account.getTransactionHistory().getHistory());
         }
         return all;
     }
@@ -168,7 +180,6 @@ public class DepositWithdrawFrame extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Nova Bank System - Deposit & Withdraw");
-        setPreferredSize(new java.awt.Dimension(875, 550));
 
         jPanel2.setBackground(new java.awt.Color(255, 255, 255));
         jPanel2.setLayout(null);

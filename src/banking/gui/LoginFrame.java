@@ -143,18 +143,18 @@ public class LoginFrame extends javax.swing.JFrame {
         Left.setLayout(LeftLayout);
         LeftLayout.setHorizontalGroup(
             LeftLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, LeftLayout.createSequentialGroup()
-                .addContainerGap(75, Short.MAX_VALUE)
-                .addGroup(LeftLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, LeftLayout.createSequentialGroup()
-                        .addComponent(jLabel6)
-                        .addGap(125, 125, 125))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, LeftLayout.createSequentialGroup()
-                        .addComponent(jLabel5)
-                        .addGap(69, 69, 69))))
             .addGroup(LeftLayout.createSequentialGroup()
-                .addGap(113, 113, 113)
                 .addGroup(LeftLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(LeftLayout.createSequentialGroup()
+                        .addGap(124, 124, 124)
+                        .addComponent(jLabel6))
+                    .addGroup(LeftLayout.createSequentialGroup()
+                        .addGap(65, 65, 65)
+                        .addComponent(jLabel5)))
+                .addContainerGap(79, Short.MAX_VALUE))
+            .addGroup(LeftLayout.createSequentialGroup()
+                .addGap(87, 87, 87)
+                .addGroup(LeftLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(jLabel8)
                     .addComponent(jLabel7))
                 .addGap(0, 0, Short.MAX_VALUE))
@@ -168,9 +168,9 @@ public class LoginFrame extends javax.swing.JFrame {
                 .addComponent(jLabel5)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel7)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 62, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 59, Short.MAX_VALUE)
                 .addComponent(jLabel8)
-                .addGap(54, 54, 54))
+                .addGap(57, 57, 57))
         );
 
         jPanel1.add(Left);
@@ -202,6 +202,7 @@ public class LoginFrame extends javax.swing.JFrame {
         jPasswordField1.setForeground(new java.awt.Color(102, 102, 102));
 
         jButton1.setBackground(new java.awt.Color(11, 60, 93));
+        jButton1.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         jButton1.setForeground(new java.awt.Color(255, 255, 255));
         jButton1.setText("Login");
 
@@ -209,7 +210,7 @@ public class LoginFrame extends javax.swing.JFrame {
         jLabel4.setText("dont have an account?");
 
         jButton2.setBackground(new java.awt.Color(255, 255, 255));
-        jButton2.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        jButton2.setFont(new java.awt.Font("Segoe UI", 1, 13)); // NOI18N
         jButton2.setForeground(new java.awt.Color(255, 51, 51));
         jButton2.setText("SignUp");
         jButton2.addActionListener(this::jButton2ActionPerformed);
@@ -259,8 +260,8 @@ public class LoginFrame extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(RightLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel4)
-                    .addComponent(jButton2))
-                .addContainerGap(69, Short.MAX_VALUE))
+                    .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(58, Short.MAX_VALUE))
         );
 
         jPanel1.add(Right);

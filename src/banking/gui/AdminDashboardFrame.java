@@ -200,7 +200,8 @@ public class AdminDashboardFrame extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Nova Bank System - Admin Dashboard");
-        setPreferredSize(new java.awt.Dimension(800, 500));
+        setPreferredSize(new java.awt.Dimension(800, 570));
+        setSize(new java.awt.Dimension(800, 570));
         getContentPane().setLayout(null);
 
         Right.setBackground(new java.awt.Color(255, 255, 255));

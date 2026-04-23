@@ -4,6 +4,14 @@
  */
 package banking.gui;
 
+import banking.api.Insurable;
+import banking.api.LoanEligible;
+import banking.core.account.Account;
+import banking.core.user.Client;
+import banking.service.AuthService;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.JOptionPane;
+
 /**
  *
  * @author Administrator
@@ -16,7 +24,143 @@ public class loanInsuranceFrame extends javax.swing.JFrame {
      * Creates new form loanInsuranceFrame
      */
     public loanInsuranceFrame() {
+        this(AuthService.get().getCurrentUser() instanceof Client
+                ? (Client) AuthService.get().getCurrentUser()
+                : null);
+    }
+
+    public loanInsuranceFrame(Client user) {
+        this.currentUser = user;
         initComponents();
+        loadAccounts();
+        loadClaimReasons();
+        refreshEligibilityLabels();
+        wireListeners();
+    }
+
+    private Client currentUser;
+
+    private void wireListeners() {
+        jButton1.addActionListener(e -> handleLoanApplication());
+        jButton2.addActionListener(e -> handleInsuranceClaim());
+    }
+
+    private void loadAccounts() {
+        DefaultComboBoxModel<String> loanAccounts = new DefaultComboBoxModel<>();
+        DefaultComboBoxModel<String> insuranceAccounts = new DefaultComboBoxModel<>();
+
+        if (currentUser != null) {
+            for (Account account : currentUser.getAccounts()) {
+                loanAccounts.addElement(account.getAccountNumber());
+                insuranceAccounts.addElement(account.getAccountNumber());
+            }
+        }
+
+        if (loanAccounts.getSize() == 0) {
+            loanAccounts.addElement("No accounts");
+            insuranceAccounts.addElement("No accounts");
+        }
+
+        jComboBox1.setModel(loanAccounts);
+        jComboBox3.setModel(insuranceAccounts);
+    }
+
+    private void loadClaimReasons() {
+        jComboBox4.setModel(new DefaultComboBoxModel<>(new String[]{
+                "Medical emergency",
+                "Accident",
+                "Property damage",
+                "Other"
+        }));
+    }
+
+    private void refreshEligibilityLabels() {
+        if (currentUser instanceof LoanEligible) {
+            jLabel2.setText("EGP " + ((LoanEligible) currentUser).getLoanLimit());
+        } else {
+            jLabel2.setText("Not eligible");
+        }
+
+        if (currentUser instanceof Insurable) {
+            jLabel5.setText("EGP " + ((Insurable) currentUser).getInsurance());
+        } else {
+            jLabel5.setText("Not eligible");
+        }
+    }
+
+    private void handleLoanApplication() {
+        try {
+            ensureClient();
+            ensureAccountSelected(jComboBox1);
+
+            if (!(currentUser instanceof LoanEligible)) {
+                showError("This client type is not eligible for loans.");
+                return;
+            }
+
+            double amount = parsePositiveAmount(jTextField1.getText().trim());
+            boolean approved = ((LoanEligible) currentUser).applyForLoan(amount);
+
+            if (approved) {
+                JOptionPane.showMessageDialog(this,
+                        "Loan application approved for EGP " + amount,
+                        "Loan Approved", JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                showError("Loan denied. Amount exceeds your loan limit.");
+            }
+        } catch (IllegalArgumentException ex) {
+            showError(ex.getMessage());
+        }
+    }
+
+    private void handleInsuranceClaim() {
+        try {
+            ensureClient();
+            ensureAccountSelected(jComboBox3);
+
+            if (!(currentUser instanceof Insurable)) {
+                showError("This client type is not eligible for insurance claims.");
+                return;
+            }
+
+            ((Insurable) currentUser).claimInsurance();
+            JOptionPane.showMessageDialog(this,
+                    "Insurance claim submitted.\nReason: " + jComboBox4.getSelectedItem(),
+                    "Claim Submitted", JOptionPane.INFORMATION_MESSAGE);
+        } catch (IllegalArgumentException ex) {
+            showError(ex.getMessage());
+        }
+    }
+
+    private void ensureClient() {
+        if (currentUser == null) {
+            throw new IllegalArgumentException("No client is logged in.");
+        }
+    }
+
+    private void ensureAccountSelected(javax.swing.JComboBox<String> comboBox) {
+        Object selected = comboBox.getSelectedItem();
+        if (selected == null || "No accounts".equals(selected.toString())) {
+            throw new IllegalArgumentException("Please select an account first.");
+        }
+    }
+
+    private double parsePositiveAmount(String raw) {
+        double amount;
+        try {
+            amount = Double.parseDouble(raw);
+        } catch (NumberFormatException ex) {
+            throw new IllegalArgumentException("Loan amount must be a valid number.");
+        }
+
+        if (amount <= 0) {
+            throw new IllegalArgumentException("Loan amount must be greater than zero.");
+        }
+        return amount;
+    }
+
+    private void showError(String message) {
+        JOptionPane.showMessageDialog(this, message, "Error", JOptionPane.ERROR_MESSAGE);
     }
 
     /**
@@ -71,6 +215,8 @@ public class loanInsuranceFrame extends javax.swing.JFrame {
         jLabel1.setForeground(new java.awt.Color(255, 255, 255));
         jLabel1.setText("Loan & Insurance ");
 
+        jLabel9.setBackground(new java.awt.Color(255, 255, 255));
+        jLabel9.setForeground(new java.awt.Color(255, 255, 255));
         jLabel9.setText("Manage your loan applications and insurance claims  ");
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
@@ -80,13 +226,16 @@ public class loanInsuranceFrame extends javax.swing.JFrame {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
                 .addContainerGap(280, Short.MAX_VALUE)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel1)
-                    .addComponent(jLabel9, javax.swing.GroupLayout.PREFERRED_SIZE, 296, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jLabel9, javax.swing.GroupLayout.PREFERRED_SIZE, 296, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                        .addComponent(jLabel1)
+                        .addGap(17, 17, 17)))
                 .addGap(224, 224, 224))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
+                .addContainerGap()
                 .addComponent(jLabel1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jLabel9)
@@ -94,7 +243,7 @@ public class loanInsuranceFrame extends javax.swing.JFrame {
         );
 
         jPanel1.add(jPanel2);
-        jPanel2.setBounds(0, 0, 800, 70);
+        jPanel2.setBounds(0, 0, 800, 80);
 
         jPanel3.setBackground(new java.awt.Color(255, 255, 255));
 
@@ -332,7 +481,7 @@ public class loanInsuranceFrame extends javax.swing.JFrame {
                 .addComponent(jLabel3)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel2)
-                .addContainerGap(12, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
@@ -354,9 +503,9 @@ public class loanInsuranceFrame extends javax.swing.JFrame {
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
                 .addContainerGap(14, Short.MAX_VALUE)
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jPanel9, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jPanel10, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jPanel9, javax.swing.GroupLayout.DEFAULT_SIZE, 78, Short.MAX_VALUE)
+                    .addComponent(jPanel10, javax.swing.GroupLayout.DEFAULT_SIZE, 78, Short.MAX_VALUE))
                 .addGap(18, 18, 18)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jPanel7, javax.swing.GroupLayout.PREFERRED_SIZE, 298, javax.swing.GroupLayout.PREFERRED_SIZE)
