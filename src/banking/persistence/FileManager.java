@@ -23,6 +23,8 @@ import banking.core.transaction.Transaction;
 import banking.core.transaction.TransactionHistory;
 import banking.core.user.Admin;
 import banking.core.user.Client;
+import banking.core.user.FirstClassClient;
+import banking.core.user.PremiumClient;
 import banking.core.user.StandardClient;
 import banking.core.user.User;
 
@@ -58,7 +60,7 @@ public class FileManager {
         try (PrintWriter writer = new PrintWriter(filePath + "_users.csv")) {
             for (int i = 0; i < users.size(); i++) {
                 User u = users.get(i);
-                String role = u instanceof Admin ? "ADMIN" : "STANDARD";
+                String role = inferUserRole(u);
                 String phone = u instanceof Client ? ((Client) u).getPhoneNumber() : "";
                 writer.println(u.getUserId() + "," + u.getName() + "," + u.getEmail()
                         + "," + u.getPassword() + "," + role + "," + phone);
@@ -129,13 +131,8 @@ public class FileManager {
 
                 if (parts.length >= 5) {
                     String role = parts[4].trim();
-                    if ("ADMIN".equalsIgnoreCase(role)) {
-                        users.add(new Admin(parts[0], parts[1], parts[2], parts[3]));
-                    } else {
-                        String phone = parts.length >= 6 ? parts[5] : "";
-                        users.add(new StandardClient(parts[0], parts[1], parts[2],
-                                parts[3], phone, 1000.0));
-                    }
+                    String phone = parts.length >= 6 ? parts[5] : "";
+                    users.add(buildUser(parts[0], parts[1], parts[2], parts[3], role, phone));
                 } else if (parts.length >= 4) {
                     String legacyRole = parts[3].trim();
                     if ("ADMIN".equalsIgnoreCase(legacyRole)) {
@@ -345,5 +342,32 @@ public class FileManager {
             return ((BusinessAccount) account).getBusinessName();
         }
         return "";
+    }
+
+    private String inferUserRole(User user) {
+        if (user instanceof Admin) {
+            return "ADMIN";
+        }
+        if (user instanceof FirstClassClient) {
+            return "FIRST_CLASS";
+        }
+        if (user instanceof PremiumClient) {
+            return "PREMIUM";
+        }
+        return "STANDARD";
+    }
+
+    private User buildUser(String userId, String name, String email,
+                           String password, String role, String phone) {
+        if ("ADMIN".equalsIgnoreCase(role)) {
+            return new Admin(userId, name, email, password);
+        }
+        if ("FIRST_CLASS".equalsIgnoreCase(role)) {
+            return new FirstClassClient(userId, name, email, password, phone, 1, 100000, 25000);
+        }
+        if ("PREMIUM".equalsIgnoreCase(role)) {
+            return new PremiumClient(userId, name, email, password, phone, 50000, 10000);
+        }
+        return new StandardClient(userId, name, email, password, phone, 1000.0);
     }
 }

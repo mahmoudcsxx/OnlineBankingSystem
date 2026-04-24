@@ -16,6 +16,7 @@ import banking.exception.InvalidLoginException;
 import banking.exception.UserAlreadyExistsException;
 import banking.persistence.FileManager;
 
+import java.io.File;
 import java.util.ArrayList;
 
 /**
@@ -27,7 +28,7 @@ public class AuthService {
   private static AuthService instance;
   
   private final ArrayList<User> users = new ArrayList<>();
-  private final FileManager fileManager = new FileManager("data/bank");
+  private final FileManager fileManager = new FileManager(resolveDataBasePath());
   private User currentUser;
   
   private AuthService() {
@@ -82,6 +83,19 @@ public class AuthService {
   
   public ArrayList<User> getUsers() {
   return users;
+  }
+
+  private static String resolveDataBasePath() {
+      String rootPath = "data/bank";
+      String nestedPath = "OnlineBankingSystem/data/bank";
+
+      if (new File(rootPath + "_users.csv").exists()) {
+          return rootPath;
+      }
+      if (new File(nestedPath + "_users.csv").exists()) {
+          return nestedPath;
+      }
+      return rootPath;
   }
   
 }

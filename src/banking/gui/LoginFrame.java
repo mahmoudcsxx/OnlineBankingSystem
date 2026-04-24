@@ -13,6 +13,7 @@ import javax.swing.JOptionPane;
 public class LoginFrame extends javax.swing.JFrame {
 
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(LoginFrame.class.getName());
+    private char defaultPasswordEcho;
 
    
     private int failedAttempts = 0;
@@ -22,6 +23,7 @@ public class LoginFrame extends javax.swing.JFrame {
   
     public LoginFrame() {
         initComponents();
+        defaultPasswordEcho = jPasswordField1.getEchoChar();
         wireListeners();
     }
 
@@ -29,6 +31,11 @@ public class LoginFrame extends javax.swing.JFrame {
     private void wireListeners() {
         jButton1.addActionListener(e -> handleLogin());
         jButton2.addActionListener(e -> handleSignUp());
+        showPasswordCheckBox.addActionListener(e -> togglePasswordVisibility());
+    }
+
+    private void togglePasswordVisibility() {
+        jPasswordField1.setEchoChar(showPasswordCheckBox.isSelected() ? (char) 0 : defaultPasswordEcho);
     }
 
    
@@ -114,15 +121,20 @@ public class LoginFrame extends javax.swing.JFrame {
         jLabel3 = new javax.swing.JLabel();
         jTextField1 = new javax.swing.JTextField();
         jPasswordField1 = new javax.swing.JPasswordField();
+        showPasswordCheckBox = new javax.swing.JCheckBox();
         jButton1 = new javax.swing.JButton();
         jLabel4 = new javax.swing.JLabel();
         jButton2 = new javax.swing.JButton();
+        jLabel9 = new javax.swing.JLabel();
+        jLabel10 = new javax.swing.JLabel();
+        jLabel11 = new javax.swing.JLabel();
+        jLabel12 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Nova Bank System - Login");
 
         jPanel1.setBackground(new java.awt.Color(255, 255, 255));
-        jPanel1.setPreferredSize(new java.awt.Dimension(800, 500));
+        jPanel1.setPreferredSize(new java.awt.Dimension(800, 590));
         jPanel1.setLayout(null);
 
         Left.setBackground(new java.awt.Color(11, 60, 93));
@@ -175,10 +187,10 @@ public class LoginFrame extends javax.swing.JFrame {
         );
 
         jPanel1.add(Left);
-        Left.setBounds(0, 0, 410, 500);
+        Left.setBounds(0, 0, 410, 590);
 
         Right.setBackground(new java.awt.Color(255, 255, 255));
-        Right.setMinimumSize(new java.awt.Dimension(400, 500));
+        Right.setMinimumSize(new java.awt.Dimension(400, 590));
 
         jLabel1.setBackground(new java.awt.Color(0, 0, 0));
         jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 40)); // NOI18N
@@ -202,6 +214,10 @@ public class LoginFrame extends javax.swing.JFrame {
         jPasswordField1.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jPasswordField1.setForeground(new java.awt.Color(102, 102, 102));
 
+        showPasswordCheckBox.setBackground(new java.awt.Color(255, 255, 255));
+        showPasswordCheckBox.setForeground(new java.awt.Color(153, 153, 153));
+        showPasswordCheckBox.setText("Show password");
+
         jButton1.setBackground(new java.awt.Color(11, 60, 93));
         jButton1.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         jButton1.setForeground(new java.awt.Color(255, 255, 255));
@@ -215,6 +231,20 @@ public class LoginFrame extends javax.swing.JFrame {
         jButton2.setForeground(new java.awt.Color(255, 51, 51));
         jButton2.setText("SignUp");
         jButton2.addActionListener(this::jButton2ActionPerformed);
+
+        jLabel9.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        jLabel9.setForeground(new java.awt.Color(11, 60, 93));
+        jLabel9.setText("Demo Accounts");
+
+        jLabel10.setFont(new java.awt.Font("Segoe UI", 0, 11)); // NOI18N
+        jLabel10.setForeground(new java.awt.Color(102, 102, 102));
+        jLabel10.setText("<html>Admin: admin@novabank.com / admin123<br>Youssef: youssef@gmail.com / youssef123<br>Mahmoud: m@gmail.com / 123<br>Zeina: zeina@gmail.com / zeina123</html>");
+
+        jLabel11.setFont(new java.awt.Font("Segoe UI", 0, 11)); // NOI18N
+        jLabel11.setForeground(new java.awt.Color(102, 102, 102));
+
+        jLabel12.setFont(new java.awt.Font("Segoe UI", 0, 11)); // NOI18N
+        jLabel12.setForeground(new java.awt.Color(102, 102, 102));
 
         javax.swing.GroupLayout RightLayout = new javax.swing.GroupLayout(Right);
         Right.setLayout(RightLayout);
@@ -240,6 +270,11 @@ public class LoginFrame extends javax.swing.JFrame {
                                 .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 132, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(jButton2))
+                            .addComponent(showPasswordCheckBox)
+                            .addComponent(jLabel9)
+                            .addComponent(jLabel10, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel11)
+                            .addComponent(jLabel12)
                             .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 82, javax.swing.GroupLayout.PREFERRED_SIZE))))
                 .addContainerGap(51, Short.MAX_VALUE))
         );
@@ -256,17 +291,27 @@ public class LoginFrame extends javax.swing.JFrame {
                 .addComponent(jLabel3)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPasswordField1, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(showPasswordCheckBox)
+                .addGap(12, 12, 12)
                 .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(RightLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel4)
                     .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(58, Short.MAX_VALUE))
+                .addGap(18, 18, 18)
+                .addComponent(jLabel9)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel10, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel11)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel12)
+                .addContainerGap(13, Short.MAX_VALUE))
         );
 
         jPanel1.add(Right);
-        Right.setBounds(410, 0, 390, 500);
+        Right.setBounds(410, 0, 390, 590);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -326,6 +371,9 @@ public class LoginFrame extends javax.swing.JFrame {
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel10;
+    private javax.swing.JLabel jLabel11;
+    private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
@@ -333,8 +381,10 @@ public class LoginFrame extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
+    private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPasswordField jPasswordField1;
     private javax.swing.JTextField jTextField1;
+    private javax.swing.JCheckBox showPasswordCheckBox;
     // End of variables declaration//GEN-END:variables
 }
