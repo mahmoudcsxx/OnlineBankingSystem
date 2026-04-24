@@ -4,8 +4,11 @@
  */
 package banking.gui;
 
+import banking.core.account.Account;
 import banking.core.user.Client;
 import banking.service.AuthService;
+import java.util.LinkedHashSet;
+import java.util.Set;
 import javax.swing.JOptionPane;
 
 
@@ -15,7 +18,37 @@ public class ClientDashboardFrame extends javax.swing.JFrame {
 
     public ClientDashboardFrame() {
         initComponents();
+        populateClientSummary();
         wireListeners();
+    }
+
+    private void populateClientSummary() {
+        Client client = getCurrentClient();
+        if (client == null) {
+            nameValueLabel.setText("Guest");
+            clientTypeValueLabel.setText("Unknown");
+            accountTypeValueLabel.setText("No accounts");
+            return;
+        }
+
+        nameValueLabel.setText(client.getName());
+        clientTypeValueLabel.setText(String.valueOf(client.getClientType()));
+        accountTypeValueLabel.setText(buildAccountTypeSummary(client));
+    }
+
+    private String buildAccountTypeSummary(Client client) {
+        if (client.getAccounts().isEmpty()) {
+            return "No accounts";
+        }
+
+        Set<String> accountTypes = new LinkedHashSet<>();
+        for (Account account : client.getAccounts()) {
+            String simpleName = account.getClass().getSimpleName()
+                    .replace("Account", "")
+                    .toUpperCase();
+            accountTypes.add(simpleName);
+        }
+        return String.join(", ", accountTypes);
     }
 
     private void wireListeners() {
@@ -152,6 +185,12 @@ public class ClientDashboardFrame extends javax.swing.JFrame {
         jButton6 = new javax.swing.JButton();
         jButton7 = new javax.swing.JButton();
         jLabel2 = new javax.swing.JLabel();
+        nameTitleLabel = new javax.swing.JLabel();
+        nameValueLabel = new javax.swing.JLabel();
+        clientTypeTitleLabel = new javax.swing.JLabel();
+        clientTypeValueLabel = new javax.swing.JLabel();
+        accountTypeTitleLabel = new javax.swing.JLabel();
+        accountTypeValueLabel = new javax.swing.JLabel();
 
         jCheckBox1.setText("jCheckBox1");
 
@@ -256,6 +295,7 @@ public class ClientDashboardFrame extends javax.swing.JFrame {
         jButton4.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         jButton4.setForeground(new java.awt.Color(255, 255, 255));
         jButton4.setText("Withdraw");
+        jButton4.addActionListener(this::jButton4ActionPerformed);
 
         jButton5.setBackground(new java.awt.Color(11, 60, 93));
         jButton5.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
@@ -276,6 +316,30 @@ public class ClientDashboardFrame extends javax.swing.JFrame {
         jLabel2.setForeground(new java.awt.Color(0, 0, 0));
         jLabel2.setText("Choose a service to continue");
 
+        nameTitleLabel.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        nameTitleLabel.setForeground(new java.awt.Color(11, 60, 93));
+        nameTitleLabel.setText("Name");
+
+        nameValueLabel.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        nameValueLabel.setForeground(new java.awt.Color(51, 51, 51));
+        nameValueLabel.setText("Client");
+
+        clientTypeTitleLabel.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        clientTypeTitleLabel.setForeground(new java.awt.Color(11, 60, 93));
+        clientTypeTitleLabel.setText("Client Type");
+
+        clientTypeValueLabel.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        clientTypeValueLabel.setForeground(new java.awt.Color(51, 51, 51));
+        clientTypeValueLabel.setText("STANDARD");
+
+        accountTypeTitleLabel.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        accountTypeTitleLabel.setForeground(new java.awt.Color(11, 60, 93));
+        accountTypeTitleLabel.setText("Account Type");
+
+        accountTypeValueLabel.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        accountTypeValueLabel.setForeground(new java.awt.Color(51, 51, 51));
+        accountTypeValueLabel.setText("No accounts");
+
         javax.swing.GroupLayout RightLayout = new javax.swing.GroupLayout(Right);
         Right.setLayout(RightLayout);
         RightLayout.setHorizontalGroup(
@@ -283,40 +347,62 @@ public class ClientDashboardFrame extends javax.swing.JFrame {
             .addGroup(RightLayout.createSequentialGroup()
                 .addGroup(RightLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(RightLayout.createSequentialGroup()
-                        .addGap(202, 202, 202)
-                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 282, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(RightLayout.createSequentialGroup()
                         .addGap(29, 29, 29)
                         .addGroup(RightLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(RightLayout.createSequentialGroup()
+                                .addGroup(RightLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(nameTitleLabel)
+                                    .addComponent(nameValueLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGap(56, 56, 56)
+                                .addGroup(RightLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(clientTypeTitleLabel)
+                                    .addComponent(clientTypeValueLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGap(53, 53, 53)
+                                .addGroup(RightLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(accountTypeTitleLabel)
+                                    .addComponent(accountTypeValueLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)))
                             .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 549, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 549, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 549, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jButton5, javax.swing.GroupLayout.PREFERRED_SIZE, 549, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jButton7, javax.swing.GroupLayout.PREFERRED_SIZE, 549, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jButton6, javax.swing.GroupLayout.PREFERRED_SIZE, 549, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 430, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                            .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 430, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addGroup(RightLayout.createSequentialGroup()
+                        .addGap(202, 202, 202)
+                        .addComponent(jLabel1)))
                 .addContainerGap(222, Short.MAX_VALUE))
         );
         RightLayout.setVerticalGroup(
             RightLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(RightLayout.createSequentialGroup()
-                .addGap(17, 17, 17)
+                .addContainerGap()
                 .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(RightLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(nameTitleLabel)
+                    .addComponent(clientTypeTitleLabel)
+                    .addComponent(accountTypeTitleLabel))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(RightLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(nameValueLabel)
+                    .addComponent(clientTypeValueLabel)
+                    .addComponent(accountTypeValueLabel))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel2)
-                .addGap(18, 18, 18)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(jButton4, javax.swing.GroupLayout.DEFAULT_SIZE, 49, Short.MAX_VALUE)
-                .addGap(18, 18, 18)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jButton5, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jButton7, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jButton6, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(43, 43, 43))
+                .addContainerGap(92, Short.MAX_VALUE))
         );
 
         jPanel1.add(Right);
@@ -341,6 +427,10 @@ public class ClientDashboardFrame extends javax.swing.JFrame {
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_jButton2ActionPerformed
+
+    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jButton4ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -379,6 +469,10 @@ try {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel Left;
     private javax.swing.JPanel Right;
+    private javax.swing.JLabel accountTypeTitleLabel;
+    private javax.swing.JLabel accountTypeValueLabel;
+    private javax.swing.JLabel clientTypeTitleLabel;
+    private javax.swing.JLabel clientTypeValueLabel;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
@@ -395,5 +489,7 @@ try {
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JLabel nameTitleLabel;
+    private javax.swing.JLabel nameValueLabel;
     // End of variables declaration//GEN-END:variables
 }
