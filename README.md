@@ -19,7 +19,7 @@ A Java Swing–based Online Banking System developed as part of the **Programmin
 | University       | British University in Egypt              |
 | Phase            | Phase 2 of 2 (GUI, Files, Exceptions)    |
 | Assessment Weight| 25% of total course mark                 |
-| Deadline         | Week 11                                  |
+| Deadline         | Week 13                                  |
 
 ## 👥 Team Members (Group 3)
 
