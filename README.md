@@ -229,4 +229,4 @@ For inquiries, please contact any team member via their BUE email address listed
 
 ---
 
-*Developed by Team A-14 · British University in Egypt · 2026*
+*Developed by Team 3 · British University in Egypt · 2026*
