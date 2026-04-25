@@ -12,7 +12,7 @@ A Java Swing–based Online Banking System developed as part of the **Programmin
 | Assessment Weight| 25% of total course mark                 |
 | Deadline         | Week 13                                  |
 
-## 👥 Team Members (Group A-14)
+## 👥 Team Members (Group 3-2026)
 
 | ID     | Name             | Email                        | Group |
 |--------|------------------|------------------------------|-------|
