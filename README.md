@@ -1,5 +1,14 @@
 # NovaBank — Online Banking System
 
+![Java](https://img.shields.io/badge/Java-17%2B-007396?logo=openjdk&logoColor=white)
+![Swing](https://img.shields.io/badge/GUI-Swing-blue)
+![Build](https://img.shields.io/badge/Build-Ant-A81C7D?logo=apacheant&logoColor=white)
+![Course](https://img.shields.io/badge/Course-25CSCI04C-brightgreen)
+![Project](https://img.shields.io/badge/Project-A1401-orange)
+![Phase](https://img.shields.io/badge/Phase-2%20of%202-yellow)
+![University](https://img.shields.io/badge/University-BUE-red)
+![License](https://img.shields.io/badge/License-Educational-lightgrey)
+
 A Java Swing–based Online Banking System developed as part of the **Programming in Java (25CSCI04C)** course at the British University in Egypt (BUE). The system provides a desktop GUI for managing bank accounts, transactions, loans, and insurance, with role-based access for Admins and Clients, persistent storage in CSV files, and comprehensive exception handling.
 
 ## 📋 Project Info
@@ -10,9 +19,9 @@ A Java Swing–based Online Banking System developed as part of the **Programmin
 | University       | British University in Egypt              |
 | Phase            | Phase 2 of 2 (GUI, Files, Exceptions)    |
 | Assessment Weight| 25% of total course mark                 |
-| Deadline         | Week 13                                  |
+| Deadline         | Week 11                                  |
 
-## 👥 Team Members (Group 3-2026)
+## 👥 Team Members (Group 3)
 
 | ID     | Name             | Email                        | Group |
 |--------|------------------|------------------------------|-------|
