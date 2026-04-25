@@ -4,7 +4,7 @@
 ![Swing](https://img.shields.io/badge/GUI-Swing-blue)
 ![Build](https://img.shields.io/badge/Build-Ant-A81C7D?logo=apacheant&logoColor=white)
 ![Course](https://img.shields.io/badge/Course-25CSCI04C-brightgreen)
-![Project](https://img.shields.io/badge/Project-A1401-orange)
+![Project](https://img.shields.io/badge/Team-3-orange)
 ![Phase](https://img.shields.io/badge/Phase-2%20of%202-yellow)
 ![University](https://img.shields.io/badge/University-BUE-red)
 ![License](https://img.shields.io/badge/License-Educational-lightgrey)
